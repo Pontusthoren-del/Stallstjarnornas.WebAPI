@@ -1,0 +1,6 @@
+@Stallstjarnornas.WebAPI_HostAddress = http://localhost:5249
+
+GET {{Stallstjarnornas.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
