@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="Stallstjarnornas.Library/Stallstjarnornas.Library.csproj" Id="8f33ccd3-742d-41cc-a47f-c32db14571f2" />
+  <Project Path="Stallstjarnornas.Test/Stallstjarnornas.Test.csproj" Id="74b90fb1-532d-4256-abb4-5cef9c741769" />
   <Project Path="Stallstjarnornas.WebAPI/Stallstjarnornas.WebAPI.csproj" />
 </Solution>
