@@ -19,5 +19,20 @@ namespace Stallstjarnornas.WebAPI.Data
 
         public DbSet<Sitting> Sittings { get; set; }
 
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Guest)
+                .WithMany(g => g.Bookings)
+                .HasForeignKey(b => b.GuestId);
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b => b.Sitting)
+                .WithMany(s => s.Bookings)
+                .HasForeignKey(b => b.SittingId);
+
+        }
     }
 }
