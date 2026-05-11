@@ -9,17 +9,16 @@ namespace Stallstjarnornas.Library.Models
 {
     internal class Guest
     {
-       public int Id { get; set; }
-        
+        public int Id { get; set; }
+
         public required string Name { get; set; }
 
         public required string Phone { get; set; }
 
         public required string Email { get; set; }
 
-        //allergi?
-
-        public ICollection<Booking> Bookings = new List<Booking>();
+        public string? Message { get; set; }  
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     }
 }

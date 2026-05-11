@@ -8,7 +8,7 @@ namespace Stallstjarnornas.Library.Models
 {
     internal class Booking
     {
-      public  int Id { get; set; }
+        public int Id { get; set; }
 
         public int GuestId { get; set; }
 
@@ -24,12 +24,7 @@ namespace Stallstjarnornas.Library.Models
 
         public DateTime CreatedDate { get; set; }
 
-        //lista av bokningar?
-
-       
-
-
-
-
+        public Guest Guest { get; set; }
+        public Sitting Sitting { get; set; }
     }
 }

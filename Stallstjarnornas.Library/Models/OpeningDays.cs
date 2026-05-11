@@ -10,11 +10,13 @@ namespace Stallstjarnornas.Library.Models
     {
         public int Id { get; set; }
 
-        public required string Day { get; set; }
+        public DayOfWeek Day { get; set; }
 
         public TimeOnly Opens { get; set; }
-        public TimeOnly Close { get; set; }
+        public TimeOnly Closes { get; set; }
 
         public bool IsClosed { get; set; } = false;
+
+        public ICollection<Sitting> Sittings { get; set; } = new List<Sitting>();
     }
 }
