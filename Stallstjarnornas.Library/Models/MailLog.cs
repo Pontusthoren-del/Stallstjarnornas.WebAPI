@@ -16,7 +16,7 @@ namespace Stallstjarnornas.Library.Models
 
         public DateTime SentDate { get; set; }
 
-        public bool Status { get; set; }
+        public string? Status { get; set; }
 
         public Booking Booking { get; set; }
     }
