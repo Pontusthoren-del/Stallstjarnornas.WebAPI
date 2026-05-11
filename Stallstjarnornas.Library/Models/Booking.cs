@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stallstjarnornas.Library.Models
 {
-    internal class Booking
+    public class Booking
     {
         public int Id { get; set; }
 
