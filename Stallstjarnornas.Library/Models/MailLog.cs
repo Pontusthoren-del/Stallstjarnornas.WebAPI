@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stallstjarnornas.Library.Models
 {
-    internal class MailLog
+    public class MailLog
     {
         public int Id { get; set; }
 

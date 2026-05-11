@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Stallstjarnornas.Library.Models
 {
-    internal class Guest
+    public class Guest
     {
         public int Id { get; set; }
 
@@ -17,7 +17,7 @@ namespace Stallstjarnornas.Library.Models
 
         public required string Email { get; set; }
 
-        public string? Message { get; set; }  
+        public string? Message { get; set; }
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     }
