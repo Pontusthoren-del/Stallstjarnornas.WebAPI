@@ -9,12 +9,15 @@ namespace Stallstjarnornas.Library.Models
     internal class Sitting
     {
         public int Id { get; set; }
-        public required string Day { get; set; }
+
+        public int OpeningDaysId { get; set; }
+
+        public OpeningDays OpeningDays { get; set; }
 
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
 
-        public int MaxGuest { get; set; }
+        public int MaxGuests { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }

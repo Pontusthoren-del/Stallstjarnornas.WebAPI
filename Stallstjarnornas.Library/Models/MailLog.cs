@@ -8,7 +8,7 @@ namespace Stallstjarnornas.Library.Models
 {
     internal class MailLog
     {
-       public int Id { get; set; }
+        public int Id { get; set; }
 
         public int BookingId { get; set; }
 
@@ -18,7 +18,6 @@ namespace Stallstjarnornas.Library.Models
 
         public bool Status { get; set; }
 
-        //BEHÖVS DENNA??? 
-
+        public Booking Booking { get; set; }
     }
 }
