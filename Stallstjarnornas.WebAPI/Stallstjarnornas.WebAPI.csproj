@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Stallstjarnornas.Library\Stallstjarnornas.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
