@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stallstjarnornas.Library.Models
 {
-    public class OpeningDay
+    public class OperatingDay
     {
         public int Id { get; set; }
 
