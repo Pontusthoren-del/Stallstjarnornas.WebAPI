@@ -18,6 +18,8 @@ namespace Stallstjarnornas.WebAPI.Data
         public DbSet<OperatingDay> OpeningDays { get; set; }
 
         public DbSet<Sitting> Sittings { get; set; }
+        public DbSet<Table> Tables { get; set; }
+        public DbSet<TableAssignment> TableAssignments { get; set; }
 
 
 
@@ -32,6 +34,18 @@ namespace Stallstjarnornas.WebAPI.Data
                 .HasOne(b => b.Sitting)
                 .WithMany(s => s.Bookings)
                 .HasForeignKey(b => b.SittingId);
+            modelBuilder.Entity<TableAssignment>()
+                .HasOne(ta => ta.Booking)
+                .WithMany(b => b.TableAssignments)
+                .HasForeignKey(ta => ta.BookingId);
+            modelBuilder.Entity<TableAssignment>()
+                .HasOne(ta => ta.Table)
+                .WithMany(t => t.TableAssignments)
+                .HasForeignKey(ta => ta.TableId);
+
+            modelBuilder.Entity<Table>().HasData(
+               Enumerable.Range(1, 25).Select(i => new Table { Id = i, Seats = 2 }).ToArray()
+                );
 
             // OpeningDays
             modelBuilder.Entity<OperatingDay>().HasData(
