@@ -26,5 +26,7 @@ namespace Stallstjarnornas.Library.Models
 
         public Guest Guest { get; set; }
         public Sitting Sitting { get; set; }
+        public ICollection<TableAssignment> TableAssignments { get; set; } = new List<TableAssignment>();
+
     }
 }
