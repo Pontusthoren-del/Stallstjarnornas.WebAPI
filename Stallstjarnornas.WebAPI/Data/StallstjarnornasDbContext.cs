@@ -15,7 +15,7 @@ namespace Stallstjarnornas.WebAPI.Data
 
         public DbSet<MailLog> MailLogs { get; set; }
 
-        public DbSet<OpeningDay> OpeningDays { get; set; }
+        public DbSet<OperatingDay> OpeningDays { get; set; }
 
         public DbSet<Sitting> Sittings { get; set; }
 
@@ -34,32 +34,32 @@ namespace Stallstjarnornas.WebAPI.Data
                 .HasForeignKey(b => b.SittingId);
 
             // OpeningDays
-            modelBuilder.Entity<OpeningDay>().HasData(
-                new OpeningDay { Id = 1, Day = DayOfWeek.Monday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 2, Day = DayOfWeek.Tuesday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 3, Day = DayOfWeek.Wednesday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 4, Day = DayOfWeek.Thursday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 5, Day = DayOfWeek.Friday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 6, Day = DayOfWeek.Saturday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
-                new OpeningDay { Id = 7, Day = DayOfWeek.Sunday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = true }
+            modelBuilder.Entity<OperatingDay>().HasData(
+                new OperatingDay { Id = 1, Day = DayOfWeek.Monday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 2, Day = DayOfWeek.Tuesday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 3, Day = DayOfWeek.Wednesday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 4, Day = DayOfWeek.Thursday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 5, Day = DayOfWeek.Friday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 6, Day = DayOfWeek.Saturday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = false },
+                new OperatingDay { Id = 7, Day = DayOfWeek.Sunday, Opens = new TimeOnly(17, 0), Closes = new TimeOnly(22, 0), IsClosed = true }
             );
 
             // Sittings - 2 per dag (även söndag definierad men IsClosed = true på OpeningDays)
             modelBuilder.Entity<Sitting>().HasData(
-                new Sitting { Id = 1, OpeningDaysId = 1, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 2, OpeningDaysId = 1, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 3, OpeningDaysId = 2, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 4, OpeningDaysId = 2, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 5, OpeningDaysId = 3, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 6, OpeningDaysId = 3, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 7, OpeningDaysId = 4, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 8, OpeningDaysId = 4, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 9, OpeningDaysId = 5, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 10, OpeningDaysId = 5, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 11, OpeningDaysId = 6, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 12, OpeningDaysId = 6, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
-                new Sitting { Id = 13, OpeningDaysId = 7, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
-                new Sitting { Id = 14, OpeningDaysId = 7, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 }
+                new Sitting { Id = 1, OperatingDayId = 1, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 2, OperatingDayId = 1, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 3, OperatingDayId = 2, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 4, OperatingDayId = 2, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 5, OperatingDayId = 3, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 6, OperatingDayId = 3, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 7, OperatingDayId = 4, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 8, OperatingDayId = 4, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 9, OperatingDayId = 5, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 10, OperatingDayId = 5, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 11, OperatingDayId = 6, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 12, OperatingDayId = 6, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 },
+                new Sitting { Id = 13, OperatingDayId = 7, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 },
+                new Sitting { Id = 14, OperatingDayId = 7, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 }
             );
 
             // Guests - 30 gäster
