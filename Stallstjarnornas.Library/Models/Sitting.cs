@@ -10,9 +10,9 @@ namespace Stallstjarnornas.Library.Models
     {
         public int Id { get; set; }
 
-        public int OpeningDaysId { get; set; }
+        public int OperatingDayId { get; set; }
 
-        public OpeningDay OpeningDays { get; set; }
+        public OperatingDay OperatingDays { get; set; }
 
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
