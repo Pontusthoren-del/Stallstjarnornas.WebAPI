@@ -17,7 +17,7 @@ namespace Stallstjarnornas.Library.Models
 
         public required string Email { get; set; }
 
-        public string? Message { get; set; }
+        
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     }
