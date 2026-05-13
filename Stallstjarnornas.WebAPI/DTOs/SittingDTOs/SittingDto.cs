@@ -8,6 +8,8 @@
         TimeOnly EndTime,
         int MaxGuest,
         int CurrentBookings, //logig i service
+        int OccupiedTables,
+        int AvailableTables,
         int AvailebleSeats  //logig i service
         );
     
