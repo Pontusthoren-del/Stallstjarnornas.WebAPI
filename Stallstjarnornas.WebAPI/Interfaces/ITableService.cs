@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stallstjarnornas.Library.Interfaces
+namespace Stallstjarnornas.WebAPI.Interfaces
 {
-    public interface IMailLogService
+    public interface ITableService
     {
     }
 }
