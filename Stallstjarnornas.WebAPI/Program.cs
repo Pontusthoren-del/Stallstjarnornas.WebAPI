@@ -1,6 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using Stallstjarnornas.WebAPI.Data;
+using Stallstjarnornas.WebAPI.Interfaces;
+using Stallstjarnornas.WebAPI.Services;
 
 namespace Stallstjarnornas.WebAPI
 {
@@ -12,6 +15,8 @@ namespace Stallstjarnornas.WebAPI
             builder.Services.AddDbContext<StallstjarnornasDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("Stallstjarnornas.WebAPI")));
+
+            builder.Services.AddScoped<IBookingService, BookingService>();
 
             // Add services to the container.
 
@@ -25,6 +30,7 @@ namespace Stallstjarnornas.WebAPI
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();

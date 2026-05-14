@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stallstjarnornas.WebAPI.DTOs.Booking;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,22 @@ namespace Stallstjarnornas.WebAPI.Interfaces
 {
     public interface IBookingService
     {
+        // Gäst
+        Task<BookingResponseDto> CreateBookingExistingGuestAsync(CreateBookingExistingGuestDto dto);
+        Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto);
+        Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber);
+        Task CancelBookingAsync(int bookingNumber);
+        Task<BookingResponseDto> RebookBookingAsync(int bookingNumber, UpdateBookingDto dto);
 
+        // Admin
+        Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync();
+        Task<BookingResponseDto> GetBookingByIdAsync(int id);
+        Task<IEnumerable<BookingResponseDto>> GetBookingsByDateAsync(DateOnly date);
+        Task<IEnumerable<BookingResponseDto>> GetBookingsByWeekAsync(DateOnly weekStart);
+        Task<IEnumerable<BookingResponseDto>> GetBookingsByMonthAsync(int year, int month);
+        Task<IEnumerable<BookingResponseDto>> GetBookingsBySittingAsync(int sittingId);
+        Task<BookingResponseDto> UpdateBookingAsync(int id, UpdateBookingDto dto);
+        Task DeleteBookingAsync(int id);
+        Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(string? status, DateOnly? date, int? sittingId);
     }
 }
