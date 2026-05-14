@@ -8,5 +8,6 @@ namespace Stallstjarnornas.WebAPI.Interfaces
 {
     public interface IBookingService
     {
+
     }
 }
