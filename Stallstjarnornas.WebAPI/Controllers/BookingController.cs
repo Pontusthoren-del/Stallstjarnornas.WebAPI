@@ -13,10 +13,17 @@ public class BookingController : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
+    [HttpPost("Create-Booking")]
     public async Task<ActionResult<BookingResponseDto>> CreateBooking(CreateBookingDto dto)
     {
         var result = await _service.CreateBookingAsync(dto);
+        return Ok(result);
+    }
+
+    [HttpPost("existing-guest")]
+    public async Task<ActionResult<BookingResponseDto>> CreateBookingExistingGuest(CreateBookingExistingGuestDto dto)
+    {
+        var result = await _service.CreateBookingExistingGuestAsync(dto);
         return Ok(result);
     }
 }
