@@ -72,7 +72,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 };
                 _ctx.Guests.Add(guest);
             }
-
+            //Här skapas bokningen
             var booking = new Booking
             {
                 Guest = guest,
@@ -86,7 +86,7 @@ namespace Stallstjarnornas.WebAPI.Services
             };
             _ctx.Bookings.Add(booking);
             await _ctx.SaveChangesAsync();
-
+            //Här retuneras bokningen med rätt info
             return new BookingResponseDto(
                 Id: booking.Id,
                 BookingNumber: booking.BookingNumber,
@@ -103,9 +103,68 @@ namespace Stallstjarnornas.WebAPI.Services
             );
         }
 
-        public Task<BookingResponseDto> CreateBookingExistingGuestAsync(CreateBookingExistingGuestDto dto)
+        public async Task<BookingResponseDto> CreateBookingExistingGuestAsync(CreateBookingExistingGuestDto dto)
         {
-            throw new NotImplementedException();
+            var guest = await _ctx.Guests
+                .FirstOrDefaultAsync(g => g.Id == dto.GuestId);
+
+            if (guest == null)
+            {
+                throw new Exception("Ingen gäst hittades med det Id:t");
+            }
+
+            var sittingInfo = await _ctx.Sittings
+               .Where(s => s.Id == dto.SittingId)
+               .Select(s => new
+               {
+                   s.Id,
+                   s.StartTime,
+                   s.EndTime,
+                   s.MaxGuests,
+                   BookedGuests = s.Bookings
+                   .Where(b => b.BookingDate == dto.Date.ToDateTime(TimeOnly.MinValue)
+                   && b.Status != "Cancelled")
+                   .Sum(b => b.NoOfGuests)
+               })
+               .FirstOrDefaultAsync();
+            if (sittingInfo == null)
+                throw new Exception("Sittningen finns inte");
+
+            if (sittingInfo.BookedGuests + dto.NumberOfGuests > sittingInfo.MaxGuests)
+                throw new Exception("Sittningen är fullbokad");
+
+            var maxBokningsnummer = await _ctx.Bookings
+                .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;
+
+            var booking = new Booking
+            {
+                GuestId = guest.Id,
+                SittingId = dto.SittingId,
+                BookingDate = dto.Date.ToDateTime(TimeOnly.MinValue),
+                NoOfGuests = dto.NumberOfGuests,
+                Status = "Pending",
+                BookingNumber = maxBokningsnummer + 1,
+                CreatedDate = DateTime.Now,
+                Message = dto.Message
+            };
+
+            _ctx.Bookings.Add(booking);
+            await _ctx.SaveChangesAsync();
+
+            return new BookingResponseDto(
+                Id: booking.Id,
+                BookingNumber: booking.BookingNumber,
+                GuestName: guest.Name,
+                GuestEmail: guest.Email,
+                GuestPhone: guest.Phone,
+                BookingDate: dto.Date,
+                SittingStartTime: sittingInfo.StartTime,
+                SittingEndTime: sittingInfo.EndTime,
+                NumberOfGuests: booking.NoOfGuests,
+                Status: booking.Status,
+                Message: booking.Message,
+                CreatedDate: booking.CreatedDate
+            );
         }
 
         public Task DeleteBookingAsync(int id)
