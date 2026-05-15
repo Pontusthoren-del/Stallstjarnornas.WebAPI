@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stallstjarnornas.WebAPI.DTOs.Guest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace Stallstjarnornas.WebAPI.Interfaces
 {
     public interface IGuestService
     {
+        
+            Task<GuestDto?> GetGuestByIdAsync(int id);
+        
     }
 }

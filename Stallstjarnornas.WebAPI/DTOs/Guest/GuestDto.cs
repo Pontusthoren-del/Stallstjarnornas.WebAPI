@@ -7,8 +7,7 @@ namespace Stallstjarnornas.WebAPI.DTOs.Guest
         int Id,
         string Name,
         string Phone,
-        string Email,
-        string? Message
+        string Email
     );
 
 }
