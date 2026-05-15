@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using Stallstjarnornas.WebAPI.DTOs.Guest;
 using Stallstjarnornas.WebAPI.Interfaces;
 
@@ -18,7 +19,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GuestDto>> GetGuest(int id)
         {
-            var guest = await _service.GetByIdAsync(id);
+            var guest = await _service.GetGuestByIdAsync(id);
             if (guest == null) return NotFound();
             return Ok(guest);
         }
