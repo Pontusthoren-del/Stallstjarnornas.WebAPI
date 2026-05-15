@@ -18,7 +18,7 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             _context = context;
         }
-        public async Task<GuestDto?> GetByIdAsync(int id)
+        public async Task<GuestDto?> GetGuestByIdAsync(int id)
         {
             var guest = await _context.Guests.FindAsync(id);
             if (guest == null) return null;
