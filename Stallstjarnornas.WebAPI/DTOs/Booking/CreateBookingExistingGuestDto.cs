@@ -5,7 +5,7 @@ namespace Stallstjarnornas.WebAPI.DTOs.Booking
     public record CreateBookingExistingGuestDto(
         [Required]
         int GuestId,
-        DateTime Date,
+        DateOnly Date,
         int NumberOfGuests,
         int SittingId,
         string? Message
