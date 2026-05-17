@@ -1,9 +1,12 @@
-﻿namespace Stallstjarnornas.WebAPI.DTOs.TableAssignment
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Stallstjarnornas.WebAPI.DTOs.TableAssignment
 
 {
     public record TableAssignmentResponseDto(
         int Id,
-        int TableId,
+        
+        List<int> TableIds,//Admin ska kunna assigna flera bord för en bokning
         int BookingNumber,
         string GuestName,
         int NoOfGuests,

@@ -41,7 +41,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 tablesNeeded = (noOfGuests + 1) / 2;
             }
             //logik för att se om alla platser är bokade ligger i booking. 
-
+           
             
         }
 

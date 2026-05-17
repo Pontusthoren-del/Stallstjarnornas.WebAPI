@@ -6,6 +6,7 @@ namespace Stallstjarnornas.WebAPI.DTOs.TableAssignment
         [Required]
         int BookingId,
         [Required]
-        int TableId
+        List<int> TableIds//Admin ska kunna assigna flera bord för en bokning
+
         );
 }
