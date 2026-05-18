@@ -14,12 +14,12 @@ namespace Stallstjarnornas.WebAPI.Services
 {
     public class TableAssignmentService : ITableAssignmentService
     {
-        private readonly StallstjarnornasDbContext _ctx;
+        //private readonly StallstjarnornasDbContext _ctx;
 
-        public TableAssignmentService(StallstjarnornasDbContext ctx)
-        {
-            _ctx = ctx;
-        }
+        //public TableAssignmentService(StallstjarnornasDbContext ctx)
+        //{
+        //    _ctx = ctx;
+        //}
 
         //public async Task<TableAssignmentResponseDto> AssignTableAsync(CreateTableAssignmentDto dto)
         //{
