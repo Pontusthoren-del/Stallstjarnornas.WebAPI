@@ -21,29 +21,29 @@ namespace Stallstjarnornas.WebAPI.Services
             _ctx = ctx;
         }
 
-        public async Task<TableAssignmentResponseDto> AssignTableAsync(CreateTableAssignmentDto dto)
-        {
-            var booking = await _ctx.Bookings.FirstOrDefaultAsync(b => b.Id==dto.BookingId);
+        //public async Task<TableAssignmentResponseDto> AssignTableAsync(CreateTableAssignmentDto dto)
+        //{
+        //    var booking = await _ctx.Bookings.FirstOrDefaultAsync(b => b.Id==dto.BookingId);
 
-            if (booking == null)
-            {
-                throw new Exception("Booking not found");
-            }
+        //    if (booking == null)
+        //    {
+        //        throw new Exception("Booking not found");
+        //    }
 
-            var noOfGuests = booking.NoOfGuests;
-            int tablesNeeded;
-            if (noOfGuests % 2 == 0)
-            {
-                tablesNeeded = noOfGuests / 2;
-            }
-            else
-            {
-                tablesNeeded = (noOfGuests + 1) / 2;
-            }
-            //logik för att se om alla platser är bokade ligger i booking. 
+        //    var noOfGuests = booking.NoOfGuests;
+        //    int tablesNeeded;
+        //    if (noOfGuests % 2 == 0)
+        //    {
+        //        tablesNeeded = noOfGuests / 2;
+        //    }
+        //    else
+        //    {
+        //        tablesNeeded = (noOfGuests + 1) / 2;
+        //    }
+        //    //logik för att se om alla platser är bokade ligger i booking. 
            
             
-        }
+        //}
 
 
     }
