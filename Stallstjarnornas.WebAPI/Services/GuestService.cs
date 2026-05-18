@@ -1,4 +1,5 @@
 ﻿using Stallstjarnornas.Library.Models;
+
 using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Guest;
 using Stallstjarnornas.WebAPI.Interfaces;
@@ -32,6 +33,18 @@ namespace Stallstjarnornas.WebAPI.Services
 
             _context.Guests.Add(guest);
             return guest;
+        }
+
+        public async Task<IEnumerable<GuestDto>> GetAllGuestsAsync()
+        {
+            return await _context.Guests
+                .Select(g => new GuestDto(
+                    g.Id,
+                    g.Name,
+                    g.Phone,
+                    g.Email
+                    ))
+                .ToListAsync();
         }
 
         public async Task<GuestDto?> GetGuestByIdAsync(int id)
