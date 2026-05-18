@@ -16,7 +16,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
             _service = service;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Find-Guest{id}")]
         public async Task<ActionResult<GuestDto>> GetGuest(int id)
         {
             var guest = await _service.GetGuestByIdAsync(id);
