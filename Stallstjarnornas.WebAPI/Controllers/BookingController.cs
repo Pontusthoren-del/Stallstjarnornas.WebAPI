@@ -20,12 +20,6 @@ public class BookingController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<BookingResponseDto>> CreateBookingExistingGuest(CreateBookingExistingGuestDto dto)
-    {
-        var result = await _service.CreateBookingExistingGuestAsync(dto);
-        return Ok(result);
-    }
     [HttpGet("{bookingNumber}")]
     public async Task<ActionResult<BookingResponseDto>> GetBookingByNumber(int bookingNumber)
     {

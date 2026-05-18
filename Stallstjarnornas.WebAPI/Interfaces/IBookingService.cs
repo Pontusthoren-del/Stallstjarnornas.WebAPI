@@ -10,7 +10,6 @@ namespace Stallstjarnornas.WebAPI.Interfaces
     public interface IBookingService
     {
         // Gäst
-        Task<BookingResponseDto> CreateBookingExistingGuestAsync(CreateBookingExistingGuestDto dto);
         Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto);
         Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber);
         Task CancelBookingAsync(int bookingNumber);
