@@ -15,10 +15,12 @@ namespace Stallstjarnornas.WebAPI.Services
     {
 
         private readonly StallstjarnornasDbContext _ctx;
+        private readonly IGuestService _guestService;
 
-        public BookingService(StallstjarnornasDbContext ctx)
+        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestServcie)
         {
             _ctx = ctx;
+            _guestService = guestServcie;
         }
 
         public Task CancelBookingAsync(int bookingNumber)
@@ -28,7 +30,13 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
         {
-
+            var guest = await _guestService.GetGuestEntityByEmailAsync(dto.Email);
+            
+            if (guest == null)
+            {
+                guest = new Guest { Name = dto.Name, Phone = dto.Phone, Email = dto.Email };
+                _ctx.Guests.Add(guest); 
+            }
             //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
                 .Where(s => s.Id == dto.SittingId)
@@ -55,23 +63,9 @@ namespace Stallstjarnornas.WebAPI.Services
                 throw new Exception("Sittningen är fullbokad.");
             }
 
-            var guest = await _ctx.Guests
-                .FirstOrDefaultAsync(g => g.Email == dto.Email);
-
             //Bookingtabellen -> hittar högsta bokningsnumret ->om tabellen är TOM(null) - börja på 1000.
             var maxBookingNumber = await _ctx.Bookings
-                .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;
-
-            if (guest == null)
-            {
-                guest = new Guest
-                {
-                    Name = dto.Name,
-                    Phone = dto.Phone,
-                    Email = dto.Email
-                };
-                _ctx.Guests.Add(guest);
-            }
+                .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;    
             //Här skapas bokningen
             var booking = new Booking
             {
@@ -102,79 +96,90 @@ namespace Stallstjarnornas.WebAPI.Services
             );
         }
 
-        public async Task<BookingResponseDto> CreateBookingExistingGuestAsync(CreateBookingExistingGuestDto dto)
-        {
-            var guest = await _ctx.Guests
-                .FirstOrDefaultAsync(g => g.Id == dto.GuestId);
-
-            if (guest == null)
-            {
-                throw new Exception("Ingen gäst hittades med det Id:t");
-            }
-
-            var sittingInfo = await _ctx.Sittings
-               .Where(s => s.Id == dto.SittingId)
-               .Select(s => new
-               {
-                   s.Id,
-                   s.StartTime,
-                   s.EndTime,
-                   s.MaxGuests,
-                   BookedGuests = s.Bookings
-                   .Where(b => b.BookingDate == dto.Date.ToDateTime(TimeOnly.MinValue)
-                   && b.Status != "Cancelled")
-                   .Sum(b => b.NoOfGuests)
-               })
-               .FirstOrDefaultAsync();
-            if (sittingInfo == null)
-                throw new Exception("Sittningen finns inte");
-
-            if (sittingInfo.BookedGuests + dto.NumberOfGuests > sittingInfo.MaxGuests)
-                throw new Exception("Sittningen är fullbokad");
-
-            var maxBokningsnummer = await _ctx.Bookings
-                .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;
-
-            var booking = new Booking
-            {
-                GuestId = guest.Id,
-                SittingId = dto.SittingId,
-                BookingDate = dto.Date.ToDateTime(TimeOnly.MinValue),
-                NoOfGuests = dto.NumberOfGuests,
-                Status = "Pending",
-                BookingNumber = maxBokningsnummer + 1,
-                CreatedDate = DateTime.Now,
-                Message = dto.Message
-            };
-
-            _ctx.Bookings.Add(booking);
-            await _ctx.SaveChangesAsync();
-
-            return new BookingResponseDto(
-                BookingNumber: booking.BookingNumber,
-                GuestName: guest.Name,
-                GuestEmail: guest.Email,
-                GuestPhone: guest.Phone,
-                BookingDate: dto.Date,
-                SittingStartTime: sittingInfo.StartTime,
-                SittingEndTime: sittingInfo.EndTime,
-                NumberOfGuests: booking.NoOfGuests,
-                Status: booking.Status,
-                Message: booking.Message,
-                CreatedDate: booking.CreatedDate
-            );
-        }
-
+      
         public Task DeleteBookingAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(string? status, DateOnly? date, int? sittingId)
+        public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
+        string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year)
         {
-            throw new NotImplementedException();
-        }
+            var query = _ctx.Bookings.AsQueryable();
 
+            // Dessa körs i SQL
+            if (date.HasValue)
+            {
+                query = query.Where(b =>
+                    b.BookingDate == date.Value.ToDateTime(TimeOnly.MinValue));
+            }
+            if (sittingId.HasValue)
+            {
+                query = query.Where(b => b.SittingId == sittingId.Value);
+            }
+            if (status != null)
+            {
+                query = query.Where(b => b.Status == status);
+            }
+            // Månad + år körs i SQL
+            if (month.HasValue && year.HasValue)
+            {
+                query = query.Where(b =>
+                    b.BookingDate.Month == month.Value &&
+                    b.BookingDate.Year == year.Value);
+            }
+            // Bara år utan vecka körs i SQL
+            else if (year.HasValue && !week.HasValue)
+            {
+                query = query.Where(b => b.BookingDate.Year == year.Value);
+            }
+            // Hämta från databasen
+            var result = await query
+                .Select(b => new
+                {
+                    b.BookingNumber,
+                    GuestName = b.Guest.Name,
+                    GuestEmail = b.Guest.Email,
+                    GuestPhone = b.Guest.Phone,
+                    BookingDate = DateOnly.FromDateTime(b.BookingDate),
+                    b.Sitting.StartTime,
+                    b.Sitting.EndTime,
+                    b.NoOfGuests,
+                    b.Status,
+                    b.Message,
+                    b.CreatedDate
+                })
+                .ToListAsync();
+
+            // Vecka filtreras i minnet med ISOWeek
+            if (week.HasValue && year.HasValue)
+                result = result.Where(b =>
+                    System.Globalization.ISOWeek.GetWeekOfYear(
+                        b.BookingDate.ToDateTime(TimeOnly.MinValue)) == week.Value &&
+                    System.Globalization.ISOWeek.GetYear(
+                        b.BookingDate.ToDateTime(TimeOnly.MinValue)) == year.Value)
+                    .ToList();
+
+            else if (week.HasValue)
+                result = result.Where(b =>
+                    System.Globalization.ISOWeek.GetWeekOfYear(
+                        b.BookingDate.ToDateTime(TimeOnly.MinValue)) == week.Value)
+                    .ToList();
+
+            return result.Select(b => new BookingResponseDto(
+                BookingNumber: b.BookingNumber,
+                GuestName: b.GuestName,
+                GuestEmail: b.GuestEmail,
+                GuestPhone: b.GuestPhone,
+                BookingDate: b.BookingDate,
+                SittingStartTime: b.StartTime,
+                SittingEndTime: b.EndTime,
+                NumberOfGuests: b.NoOfGuests,
+                Status: b.Status,
+                Message: b.Message,
+                CreatedDate: b.CreatedDate
+            ));
+        }
         public Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync()
         {
             throw new NotImplementedException();
@@ -218,28 +223,7 @@ namespace Stallstjarnornas.WebAPI.Services
             );
         }
 
-
-        public Task<IEnumerable<BookingResponseDto>> GetBookingsByDateAsync(DateOnly date)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<BookingResponseDto>> GetBookingsByMonthAsync(int year, int month)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<BookingResponseDto>> GetBookingsBySittingAsync(int sittingId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<BookingResponseDto>> GetBookingsByWeekAsync(DateOnly weekStart)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<BookingResponseDto> RebookBookingAsync(int bookingNumber, UpdateBookingDto dto)
+       public Task<BookingResponseDto> RebookBookingAsync(int bookingNumber, UpdateBookingDto dto)
         {
             throw new NotImplementedException();
         }

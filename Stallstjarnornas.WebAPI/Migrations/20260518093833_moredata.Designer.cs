@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stallstjarnornas.WebAPI.Data;
 
@@ -11,9 +12,11 @@ using Stallstjarnornas.WebAPI.Data;
 namespace Stallstjarnornas.WebAPI.Migrations
 {
     [DbContext(typeof(StallstjarnornasDbContext))]
-    partial class StallstjarnornasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518093833_moredata")]
+    partial class moredata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,7 +213,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 13,
                             Message = "Äggallergi",
                             NoOfGuests = 5,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Confirmed"
                         },
                         new
@@ -221,7 +224,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 14,
                             NoOfGuests = 2,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Pending"
                         },
                         new
@@ -232,7 +235,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 15,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Confirmed"
                         },
                         new
@@ -244,7 +247,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 16,
                             Message = "Nötallergi",
                             NoOfGuests = 3,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Confirmed"
                         },
                         new
@@ -255,7 +258,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 17,
                             NoOfGuests = 6,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Confirmed"
                         },
                         new
@@ -267,7 +270,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 18,
                             Message = "Sojaöverkänslighet",
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Cancelled"
                         },
                         new
@@ -278,7 +281,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 19,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 5,
                             Status = "Confirmed"
                         },
                         new
@@ -289,7 +292,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 20,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 5,
                             Status = "Confirmed"
                         },
                         new
@@ -301,7 +304,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 21,
                             Message = "Celiaki, strikt glutenfri mat krävs",
                             NoOfGuests = 2,
-                            SittingId = 1,
+                            SittingId = 5,
                             Status = "Confirmed"
                         },
                         new
@@ -312,7 +315,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 22,
                             NoOfGuests = 3,
-                            SittingId = 2,
+                            SittingId = 6,
                             Status = "Pending"
                         },
                         new
@@ -324,7 +327,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 23,
                             Message = "Laktosintolerant",
                             NoOfGuests = 5,
-                            SittingId = 2,
+                            SittingId = 6,
                             Status = "Confirmed"
                         },
                         new
@@ -335,7 +338,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 24,
                             NoOfGuests = 4,
-                            SittingId = 2,
+                            SittingId = 6,
                             Status = "Confirmed"
                         },
                         new
@@ -346,7 +349,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 25,
                             NoOfGuests = 2,
-                            SittingId = 1,
+                            SittingId = 7,
                             Status = "Confirmed"
                         },
                         new
@@ -358,7 +361,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 26,
                             Message = "Skaldjursallergi",
                             NoOfGuests = 6,
-                            SittingId = 1,
+                            SittingId = 7,
                             Status = "Cancelled"
                         },
                         new
@@ -369,7 +372,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 27,
                             NoOfGuests = 3,
-                            SittingId = 1,
+                            SittingId = 7,
                             Status = "Confirmed"
                         },
                         new
@@ -380,7 +383,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 28,
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 8,
                             Status = "Confirmed"
                         },
                         new
@@ -392,7 +395,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 29,
                             Message = "Ägg- och nötallergi",
                             NoOfGuests = 4,
-                            SittingId = 2,
+                            SittingId = 8,
                             Status = "Pending"
                         },
                         new
@@ -403,7 +406,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 30,
                             NoOfGuests = 5,
-                            SittingId = 2,
+                            SittingId = 8,
                             Status = "Confirmed"
                         },
                         new
@@ -459,7 +462,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 5,
                             NoOfGuests = 3,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Confirmed"
                         },
                         new
@@ -470,7 +473,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 6,
                             NoOfGuests = 5,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Cancelled"
                         },
                         new
@@ -481,7 +484,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 7,
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Confirmed"
                         },
                         new
@@ -493,7 +496,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 8,
                             Message = "Skaldjursallergi",
                             NoOfGuests = 4,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Confirmed"
                         },
                         new
@@ -504,7 +507,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 9,
                             NoOfGuests = 6,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Confirmed"
                         },
                         new
@@ -515,7 +518,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 10,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Confirmed"
                         },
                         new
@@ -527,7 +530,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 11,
                             Message = "Vegansk",
                             NoOfGuests = 8,
-                            SittingId = 2,
+                            SittingId = 10,
                             Status = "Confirmed"
                         },
                         new
@@ -538,7 +541,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 12,
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 10,
                             Status = "Pending"
                         },
                         new
@@ -549,7 +552,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 13,
                             NoOfGuests = 5,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -561,7 +564,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 14,
                             Message = "Äggallergi",
                             NoOfGuests = 3,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -572,7 +575,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 15,
                             NoOfGuests = 7,
-                            SittingId = 2,
+                            SittingId = 12,
                             Status = "Confirmed"
                         },
                         new
@@ -583,7 +586,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 16,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -594,7 +597,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 17,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -606,7 +609,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 18,
                             Message = "Sojaöverkänslighet",
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -617,7 +620,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 19,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -628,7 +631,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 20,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -640,7 +643,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 21,
                             Message = "Celiaki",
                             NoOfGuests = 6,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -651,7 +654,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 22,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -662,7 +665,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 23,
                             NoOfGuests = 3,
-                            SittingId = 2,
+                            SittingId = 12,
                             Status = "Confirmed"
                         },
                         new
@@ -674,7 +677,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 24,
                             Message = "Laktosintolerant",
                             NoOfGuests = 5,
-                            SittingId = 2,
+                            SittingId = 12,
                             Status = "Pending"
                         },
                         new
@@ -685,7 +688,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 25,
                             NoOfGuests = 2,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Confirmed"
                         },
                         new
@@ -696,7 +699,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 26,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Cancelled"
                         },
                         new
@@ -752,7 +755,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 1,
                             NoOfGuests = 6,
-                            SittingId = 1,
+                            SittingId = 5,
                             Status = "Confirmed"
                         },
                         new
@@ -764,7 +767,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 2,
                             Message = "Glutenfri",
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 6,
                             Status = "Confirmed"
                         },
                         new
@@ -775,7 +778,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 3,
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 7,
                             Status = "Confirmed"
                         },
                         new
@@ -786,7 +789,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 5, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 4,
                             NoOfGuests = 4,
-                            SittingId = 2,
+                            SittingId = 8,
                             Status = "Cancelled"
                         },
                         new
@@ -798,7 +801,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 5,
                             Message = "Vegansk",
                             NoOfGuests = 3,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Confirmed"
                         },
                         new
@@ -809,7 +812,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 6,
                             NoOfGuests = 5,
-                            SittingId = 2,
+                            SittingId = 10,
                             Status = "Confirmed"
                         },
                         new
@@ -820,7 +823,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 7,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -832,7 +835,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 8,
                             Message = "Skaldjursallergi",
                             NoOfGuests = 6,
-                            SittingId = 2,
+                            SittingId = 12,
                             Status = "Confirmed"
                         },
                         new
@@ -866,7 +869,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 11,
                             Message = "Glutenintolerant",
                             NoOfGuests = 5,
-                            SittingId = 1,
+                            SittingId = 3,
                             Status = "Confirmed"
                         },
                         new
@@ -877,7 +880,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 12,
                             NoOfGuests = 3,
-                            SittingId = 2,
+                            SittingId = 4,
                             Status = "Cancelled"
                         },
                         new
@@ -888,7 +891,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 13,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 5,
                             Status = "Confirmed"
                         },
                         new
@@ -900,7 +903,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 14,
                             Message = "Äggallergi",
                             NoOfGuests = 2,
-                            SittingId = 2,
+                            SittingId = 6,
                             Status = "Confirmed"
                         },
                         new
@@ -911,7 +914,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 9, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 15,
                             NoOfGuests = 6,
-                            SittingId = 1,
+                            SittingId = 7,
                             Status = "Confirmed"
                         },
                         new
@@ -922,7 +925,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 9, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 16,
                             NoOfGuests = 4,
-                            SittingId = 2,
+                            SittingId = 8,
                             Status = "Pending"
                         },
                         new
@@ -934,7 +937,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 17,
                             Message = "Vegansk",
                             NoOfGuests = 8,
-                            SittingId = 1,
+                            SittingId = 9,
                             Status = "Confirmed"
                         },
                         new
@@ -946,7 +949,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 18,
                             Message = "Julbord, extra speciellt!",
                             NoOfGuests = 6,
-                            SittingId = 2,
+                            SittingId = 10,
                             Status = "Confirmed"
                         },
                         new
@@ -957,7 +960,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             CreatedDate = new DateTime(2026, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             GuestId = 19,
                             NoOfGuests = 4,
-                            SittingId = 1,
+                            SittingId = 11,
                             Status = "Confirmed"
                         },
                         new
@@ -969,7 +972,7 @@ namespace Stallstjarnornas.WebAPI.Migrations
                             GuestId = 20,
                             Message = "Nyårsmiddag!",
                             NoOfGuests = 8,
-                            SittingId = 2,
+                            SittingId = 12,
                             Status = "Confirmed"
                         });
                 });
