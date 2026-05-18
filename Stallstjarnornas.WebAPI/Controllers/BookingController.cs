@@ -33,4 +33,23 @@ public class BookingController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<BookingResponseDto>>> FilterBookings(
+    [FromQuery] string? status,
+    [FromQuery] DateOnly? date,
+    [FromQuery] int? sittingId,
+    [FromQuery] int? week,
+    [FromQuery] int? month,
+    [FromQuery] int? year)
+    {
+        try
+        {
+            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
