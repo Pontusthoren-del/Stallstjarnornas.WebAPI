@@ -88,7 +88,6 @@ namespace Stallstjarnornas.WebAPI.Services
             await _ctx.SaveChangesAsync();
             //Här retuneras bokningen med rätt info
             return new BookingResponseDto(
-                Id: booking.Id,
                 BookingNumber: booking.BookingNumber,
                 GuestName: guest.Name,
                 GuestEmail: guest.Email,
@@ -152,7 +151,6 @@ namespace Stallstjarnornas.WebAPI.Services
             await _ctx.SaveChangesAsync();
 
             return new BookingResponseDto(
-                Id: booking.Id,
                 BookingNumber: booking.BookingNumber,
                 GuestName: guest.Name,
                 GuestEmail: guest.Email,
@@ -182,15 +180,44 @@ namespace Stallstjarnornas.WebAPI.Services
             throw new NotImplementedException();
         }
 
-        public Task<BookingResponseDto> GetBookingByIdAsync(int id)
+        public async Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .Where(b => b.BookingNumber == bookingNumber)
+                .Select(b => new
+                {
+                    b.BookingNumber,
+                    GuestName = b.Guest.Name,
+                    GuestEmail = b.Guest.Email,
+                    GuestPhone = b.Guest.Phone,
+                    BookingDate = DateOnly.FromDateTime(b.BookingDate),
+                    b.Sitting.StartTime,
+                    b.Sitting.EndTime,
+                    b.NoOfGuests,
+                    b.Status,
+                    b.Message,
+                    b.CreatedDate
+                })
+                .FirstOrDefaultAsync();
+
+            if (booking == null)
+                throw new Exception("Bokningen hittades inte");
+
+            return new BookingResponseDto(
+                BookingNumber: booking.BookingNumber,
+                GuestName: booking.GuestName,
+                GuestEmail: booking.GuestEmail,
+                GuestPhone: booking.GuestPhone,
+                BookingDate: booking.BookingDate,
+                SittingStartTime: booking.StartTime,
+                SittingEndTime: booking.EndTime,
+                NumberOfGuests: booking.NoOfGuests,
+                Status: booking.Status,
+                Message: booking.Message,
+                CreatedDate: booking.CreatedDate
+            );
         }
 
-        public Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<IEnumerable<BookingResponseDto>> GetBookingsByDateAsync(DateOnly date)
         {

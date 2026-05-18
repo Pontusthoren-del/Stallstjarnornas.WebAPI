@@ -18,7 +18,6 @@ namespace Stallstjarnornas.WebAPI.Interfaces
 
         // Admin
         Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync();
-        Task<BookingResponseDto> GetBookingByIdAsync(int id);
         Task<IEnumerable<BookingResponseDto>> GetBookingsByDateAsync(DateOnly date);
         Task<IEnumerable<BookingResponseDto>> GetBookingsByWeekAsync(DateOnly weekStart);
         Task<IEnumerable<BookingResponseDto>> GetBookingsByMonthAsync(int year, int month);
