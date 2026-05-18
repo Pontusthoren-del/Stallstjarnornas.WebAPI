@@ -1,6 +1,8 @@
-﻿using Stallstjarnornas.WebAPI.Data;
+﻿using Stallstjarnornas.Library.Models;
+using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Guest;
 using Stallstjarnornas.WebAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,12 @@ namespace Stallstjarnornas.WebAPI.Services
                 guest.Phone,
                 guest.Email
             );
+        }
+
+        public async Task<Guest?> GetGuestEntityByEmailAsync(string email)
+        {
+            return await _context.Guests
+                .FirstOrDefaultAsync(g => g.Email == email);
         }
     }
 }
