@@ -13,17 +13,30 @@ public class BookingController : ControllerBase
         _service = service;
     }
 
-    [HttpPost("Create-Booking")]
+    [HttpPost]
     public async Task<ActionResult<BookingResponseDto>> CreateBooking(CreateBookingDto dto)
     {
         var result = await _service.CreateBookingAsync(dto);
         return Ok(result);
     }
 
-    [HttpPost("existing-guest")]
+    [HttpPost]
     public async Task<ActionResult<BookingResponseDto>> CreateBookingExistingGuest(CreateBookingExistingGuestDto dto)
     {
         var result = await _service.CreateBookingExistingGuestAsync(dto);
         return Ok(result);
+    }
+    [HttpGet("{bookingNumber}")]
+    public async Task<ActionResult<BookingResponseDto>> GetBookingByNumber(int bookingNumber)
+    {
+        try
+        {
+            var result = await _service.GetBookingByNumberAsync(bookingNumber);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

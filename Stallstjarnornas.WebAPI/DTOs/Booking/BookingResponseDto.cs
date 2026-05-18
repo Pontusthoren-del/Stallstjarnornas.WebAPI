@@ -1,7 +1,6 @@
 ﻿namespace Stallstjarnornas.WebAPI.DTOs.Booking
 {
     public record BookingResponseDto(
-        int Id,
         int BookingNumber,
         string GuestName,
         string GuestEmail,
