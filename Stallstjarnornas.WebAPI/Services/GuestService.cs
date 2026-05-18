@@ -20,6 +20,20 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             _context = context;
         }
+
+        public async Task<Guest> CreateGuestAsync(string name, string phone, string email)
+        {
+            var guest = new Guest
+            {
+                Name = name,
+                Phone = phone,
+                Email = email
+            };
+
+            _context.Guests.Add(guest);
+            return guest;
+        }
+
         public async Task<GuestDto?> GetGuestByIdAsync(int id)
         {
             var guest = await _context.Guests.FindAsync(id);
