@@ -23,9 +23,21 @@ namespace Stallstjarnornas.WebAPI.Services
             _guestService = guestService;
         }
 
-        public Task CancelBookingAsync(int bookingNumber)
+        public async Task CancelBookingAsync(int bookingNumber)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .FirstOrDefaultAsync(b=>b.BookingNumber == bookingNumber);
+            if (booking == null)
+            {
+                throw new Exception("Bokning hittades inte.");
+            }
+            if (booking.Status == "Cancelled")  
+            {
+                throw new Exception("Bokningen är redan avbokad.");
+            }
+
+            booking.Status = "Cancelled";
+            await _ctx.SaveChangesAsync();
         }
 
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
