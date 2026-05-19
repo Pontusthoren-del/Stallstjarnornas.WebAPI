@@ -46,7 +46,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (guest == null)
             {
-                guest = await _guestService.CreateGuestAsync(dto.Name, dto.Phone, dto.Email);
+                guest = await _guestService.CreateGuestAsync(dto.Name, dto.Phone, email: dto.Email);
             }
             //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
@@ -62,7 +62,7 @@ namespace Stallstjarnornas.WebAPI.Services
                     && b.Status != "Cancelled")
                     .Sum(b => b.NoOfGuests)
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(); 
 
             //Här ser jag först så sittningen finns, och sen om sittningen är full.
             if (sittingInfo == null)
