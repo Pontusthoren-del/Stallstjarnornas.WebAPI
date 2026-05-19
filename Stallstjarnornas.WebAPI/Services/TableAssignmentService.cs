@@ -18,12 +18,12 @@ namespace Stallstjarnornas.WebAPI.Services
 {
     public class TableAssignmentService : ITableAssignmentService
     {
-        private readonly StallstjarnornasDbContext _ctx;
+        //private readonly StallstjarnornasDbContext _ctx;
 
-        public TableAssignmentService(StallstjarnornasDbContext ctx)
-        {
-            _ctx = ctx;
-        }
+        //public TableAssignmentService(StallstjarnornasDbContext ctx)
+        //{
+        //    _ctx = ctx;
+        //}
 
         public async Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto)
         {
@@ -37,10 +37,10 @@ namespace Stallstjarnornas.WebAPI.Services
             }
              ).FirstOrDefaultAsync();
 
-            if (booking == null)
-            {
-                throw new Exception("Booking not found");
-            }
+        //    if (booking == null)
+        //    {
+        //        throw new Exception("Booking not found");
+        //    }
 
             var noOfGuests = booking.NoOfGuests;
             int tablesNeeded;

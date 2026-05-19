@@ -9,7 +9,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
     [Route("api/[controller]")]
     public class GuestController : ControllerBase
     {
-        public readonly IGuestService _service;
+        private readonly IGuestService _service;
 
         public GuestController(IGuestService service)
         {
@@ -22,6 +22,13 @@ namespace Stallstjarnornas.WebAPI.Controllers
             var guest = await _service.GetGuestByIdAsync(id);
             if (guest == null) return NotFound();
             return Ok(guest);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GuestDto>>> GetAllGuests()
+        {
+            var guests = await _service.GetAllGuestsAsync();
+            return Ok(guests);
         }
     }
 }

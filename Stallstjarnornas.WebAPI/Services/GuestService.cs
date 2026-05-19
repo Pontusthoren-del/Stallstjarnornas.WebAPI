@@ -1,6 +1,9 @@
-﻿using Stallstjarnornas.WebAPI.Data;
+﻿using Stallstjarnornas.Library.Models;
+
+using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Guest;
 using Stallstjarnornas.WebAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +21,32 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             _context = context;
         }
+
+        public async Task<Guest> CreateGuestAsync(string name, string phone, string email)
+        {
+            var guest = new Guest
+            {
+                Name = name,
+                Phone = phone,
+                Email = email
+            };
+
+            _context.Guests.Add(guest);
+            return guest;
+        }
+
+        public async Task<IEnumerable<GuestDto>> GetAllGuestsAsync()
+        {
+            return await _context.Guests
+                .Select(g => new GuestDto(
+                    g.Id,
+                    g.Name,
+                    g.Phone,
+                    g.Email
+                    ))
+                .ToListAsync();
+        }
+
         public async Task<GuestDto?> GetGuestByIdAsync(int id)
         {
             var guest = await _context.Guests.FindAsync(id);
@@ -29,6 +58,12 @@ namespace Stallstjarnornas.WebAPI.Services
                 guest.Phone,
                 guest.Email
             );
+        }
+
+        public async Task<Guest?> GetGuestEntityByEmailAsync(string email)
+        {
+            return await _context.Guests
+                .FirstOrDefaultAsync(g => g.Email == email);
         }
     }
 }
