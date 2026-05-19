@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stallstjarnornas.WebAPI.Data;
 
@@ -11,9 +12,11 @@ using Stallstjarnornas.WebAPI.Data;
 namespace Stallstjarnornas.WebAPI.Migrations
 {
     [DbContext(typeof(StallstjarnornasDbContext))]
-    partial class StallstjarnornasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260519084710_addedSeedTable")]
+    partial class addedSeedTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

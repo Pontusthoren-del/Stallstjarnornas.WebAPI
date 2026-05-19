@@ -232,6 +232,77 @@ namespace Stallstjarnornas.WebAPI.Data
                 new MailLog { Id = 18, BookingId = 18, SentTo = "jonas.sandberg@gmail.com", SentDate = new DateTime(2026, 5, 8, 10, 10, 0), Status = "Failed" },
                 new MailLog { Id = 19, BookingId = 19, SentTo = "elin.sjoberg@hotmail.com", SentDate = new DateTime(2026, 5, 9, 11, 0, 0), Status = "Sent" },
                 new MailLog { Id = 20, BookingId = 20, SentTo = "viktor.lundgren@outlook.com", SentDate = new DateTime(2026, 5, 9, 11, 5, 0), Status = "Sent" }
+
+            );
+            modelBuilder.Entity<TableAssignment>().HasData(
+                // Måndag 11 maj - Sittning 1 (fullbokad) - alla placerade
+                new TableAssignment { Id = 1, BookingId = 1, TableId = 1 },
+                new TableAssignment { Id = 2, BookingId = 2, TableId = 2 },
+                new TableAssignment { Id = 3, BookingId = 2, TableId = 3 },
+                new TableAssignment { Id = 4, BookingId = 3, TableId = 4 },
+                new TableAssignment { Id = 5, BookingId = 3, TableId = 5 },
+                new TableAssignment { Id = 6, BookingId = 3, TableId = 6 },
+                new TableAssignment { Id = 7, BookingId = 4, TableId = 7 },
+                new TableAssignment { Id = 8, BookingId = 4, TableId = 8 },
+                new TableAssignment { Id = 9, BookingId = 4, TableId = 9 },
+                new TableAssignment { Id = 10, BookingId = 4, TableId = 10 },
+                new TableAssignment { Id = 11, BookingId = 5, TableId = 11 },
+                new TableAssignment { Id = 12, BookingId = 5, TableId = 12 },
+                new TableAssignment { Id = 13, BookingId = 5, TableId = 13 },
+                new TableAssignment { Id = 14, BookingId = 6, TableId = 14 },
+                new TableAssignment { Id = 15, BookingId = 6, TableId = 15 },
+                new TableAssignment { Id = 16, BookingId = 6, TableId = 16 },
+                new TableAssignment { Id = 17, BookingId = 6, TableId = 17 },
+                new TableAssignment { Id = 18, BookingId = 7, TableId = 18 },
+                new TableAssignment { Id = 19, BookingId = 7, TableId = 19 },
+                new TableAssignment { Id = 20, BookingId = 7, TableId = 20 },
+                new TableAssignment { Id = 21, BookingId = 7, TableId = 21 },
+                new TableAssignment { Id = 22, BookingId = 8, TableId = 22 },
+                new TableAssignment { Id = 23, BookingId = 8, TableId = 23 },
+                new TableAssignment { Id = 24, BookingId = 8, TableId = 24 },
+                new TableAssignment { Id = 25, BookingId = 8, TableId = 25 },
+
+                // Måndag 11 maj - Sittning 2 - delvis placerade
+                new TableAssignment { Id = 26, BookingId = 9, TableId = 1 },
+                new TableAssignment { Id = 27, BookingId = 9, TableId = 2 },
+                new TableAssignment { Id = 28, BookingId = 10, TableId = 3 },
+                new TableAssignment { Id = 29, BookingId = 10, TableId = 4 },
+                // Bokning 11 och 12 är INTE placerade än
+
+                // Tisdag 12 maj - delvis placerade
+                new TableAssignment { Id = 30, BookingId = 13, TableId = 1 },
+                new TableAssignment { Id = 31, BookingId = 13, TableId = 2 },
+                new TableAssignment { Id = 32, BookingId = 13, TableId = 3 },
+                new TableAssignment { Id = 33, BookingId = 14, TableId = 4 },
+                // Bokning 15, 16, 17, 18 är INTE placerade än
+
+                // Lördag 30 maj - Sittning 1 (fullbokad) - alla placerade
+                new TableAssignment { Id = 34, BookingId = 46, TableId = 1 },
+                new TableAssignment { Id = 35, BookingId = 46, TableId = 2 },
+                new TableAssignment { Id = 36, BookingId = 46, TableId = 3 },
+                new TableAssignment { Id = 37, BookingId = 46, TableId = 4 },
+                new TableAssignment { Id = 38, BookingId = 47, TableId = 5 },
+                new TableAssignment { Id = 39, BookingId = 47, TableId = 6 },
+                new TableAssignment { Id = 40, BookingId = 47, TableId = 7 },
+                new TableAssignment { Id = 41, BookingId = 47, TableId = 8 },
+                new TableAssignment { Id = 42, BookingId = 48, TableId = 9 },
+                new TableAssignment { Id = 43, BookingId = 48, TableId = 10 },
+                new TableAssignment { Id = 44, BookingId = 48, TableId = 11 },
+                new TableAssignment { Id = 45, BookingId = 48, TableId = 12 },
+                new TableAssignment { Id = 46, BookingId = 49, TableId = 13 },
+                new TableAssignment { Id = 47, BookingId = 49, TableId = 14 },
+                new TableAssignment { Id = 48, BookingId = 49, TableId = 15 },
+                new TableAssignment { Id = 49, BookingId = 49, TableId = 16 },
+                new TableAssignment { Id = 50, BookingId = 50, TableId = 17 },
+                new TableAssignment { Id = 51, BookingId = 50, TableId = 18 },
+                new TableAssignment { Id = 52, BookingId = 50, TableId = 19 },
+                new TableAssignment { Id = 53, BookingId = 50, TableId = 20 },
+                new TableAssignment { Id = 54, BookingId = 51, TableId = 21 },
+                new TableAssignment { Id = 55, BookingId = 51, TableId = 22 },
+                new TableAssignment { Id = 56, BookingId = 51, TableId = 23 },
+                new TableAssignment { Id = 57, BookingId = 52, TableId = 24 },
+                new TableAssignment { Id = 58, BookingId = 52, TableId = 25 }
+                // Bokning 53 och 54 är INTE placerade än
             );
         }
     }
