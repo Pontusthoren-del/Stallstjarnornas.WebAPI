@@ -89,8 +89,20 @@ namespace Stallstjarnornas.WebAPI.Services
                     booking.SittingId
             );
 
-            return response;
+            foreach (var tableId in dto.TableIds)
+            {
+                var assignment = new TableAssignment
+                {
+                    TableId = tableId,
+                    BookingId = booking.Id
+                };
 
+                _ctx.TableAssignments.Add(assignment);
+            }
+
+            await _ctx.SaveChangesAsync();
+
+            return response;
 
         }
 
