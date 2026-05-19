@@ -17,6 +17,7 @@ namespace Stallstjarnornas.WebAPI
                 b => b.MigrationsAssembly("Stallstjarnornas.WebAPI")));
 
             builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<ITableAssignmentService, TableAssignmentService>();
             builder.Services.AddScoped<IGuestService, GuestService>();
 
             // Add services to the container.
