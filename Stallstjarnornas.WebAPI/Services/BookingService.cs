@@ -17,10 +17,10 @@ namespace Stallstjarnornas.WebAPI.Services
         private readonly StallstjarnornasDbContext _ctx;
         private readonly IGuestService _guestService;
 
-        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestServcie)
+        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestService)
         {
             _ctx = ctx;
-            _guestService = guestServcie;
+            _guestService = guestService;
         }
 
         public async Task CancelBookingAsync(int bookingNumber)
@@ -46,8 +46,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (guest == null)
             {
-                guest = new Guest { Name = dto.Name, Phone = dto.Phone, Email = dto.Email };
-                _ctx.Guests.Add(guest);
+                guest = await _guestService.CreateGuestAsync(dto.Name, dto.Phone, dto.Email);
             }
             //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
