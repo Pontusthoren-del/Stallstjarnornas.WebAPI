@@ -16,8 +16,15 @@ public class BookingController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<BookingResponseDto>> CreateBooking(CreateBookingDto dto)
     {
-        var result = await _service.CreateBookingAsync(dto);
-        return Ok(result);
+        try
+        {
+            var result = await _service.CreateBookingAsync(dto);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("{bookingNumber}")]
@@ -45,8 +52,22 @@ public class BookingController : ControllerBase
     {
         try
         {
-            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year,isPlaced);
+            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year, isPlaced);
             return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPatch("{bookingNumber}/cancel")]
+    public async Task<ActionResult> CancelBooking(int bookingNumber)
+    {
+        try
+        {
+            await _service.CancelBookingAsync(bookingNumber);
+            return Ok("Bokningen är avbokad.");
         }
         catch (Exception ex)
         {
