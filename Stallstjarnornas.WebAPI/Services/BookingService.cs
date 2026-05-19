@@ -92,7 +92,8 @@ namespace Stallstjarnornas.WebAPI.Services
                 NumberOfGuests: booking.NoOfGuests,
                 Status: booking.Status,
                 Message: booking.Message,
-                CreatedDate: booking.CreatedDate
+                CreatedDate: booking.CreatedDate,
+                IsPlaced: false
             );
         }
 
@@ -105,6 +106,7 @@ namespace Stallstjarnornas.WebAPI.Services
         public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
         string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year)
         {
+            //här hämtar vi alla bokningar som en "query" - men inget skickas till databasen än
             var query = _ctx.Bookings.AsQueryable();
 
             // Dessa körs i SQL
@@ -133,7 +135,7 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 query = query.Where(b => b.BookingDate.Year == year.Value);
             }
-            // Hämta från databasen
+            // HÄR skickas allt till databasen i ett enda anrop!
             var result = await query
                 .Select(b => new
                 {
@@ -147,11 +149,12 @@ namespace Stallstjarnornas.WebAPI.Services
                     b.NoOfGuests,
                     b.Status,
                     b.Message,
-                    b.CreatedDate
+                    b.CreatedDate,
+                    IsPlaced = b.TableAssignments.Any()
                 })
                 .ToListAsync();
 
-            // Vecka filtreras i minnet med ISOWeek
+            // Vecka filtreras i minnet med ISOWeek - för den kan inte köras i SQL
             if (week.HasValue && year.HasValue)
                 result = result.Where(b =>
                     System.Globalization.ISOWeek.GetWeekOfYear(
@@ -177,7 +180,8 @@ namespace Stallstjarnornas.WebAPI.Services
                 NumberOfGuests: b.NoOfGuests,
                 Status: b.Status,
                 Message: b.Message,
-                CreatedDate: b.CreatedDate
+                CreatedDate: b.CreatedDate,
+                IsPlaced: b.IsPlaced
             ));
         }
         public Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync()
@@ -201,7 +205,8 @@ namespace Stallstjarnornas.WebAPI.Services
                     b.NoOfGuests,
                     b.Status,
                     b.Message,
-                    b.CreatedDate
+                    b.CreatedDate,
+                    IsPlaced = b.TableAssignments.Any()
                 })
                 .FirstOrDefaultAsync();
 
@@ -210,7 +215,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
             return new BookingResponseDto(
                 BookingNumber: booking.BookingNumber,
-                GuestName: booking.GuestName,
+                GuestName: booking.GuestName,   
                 GuestEmail: booking.GuestEmail,
                 GuestPhone: booking.GuestPhone,
                 BookingDate: booking.BookingDate,
@@ -219,7 +224,8 @@ namespace Stallstjarnornas.WebAPI.Services
                 NumberOfGuests: booking.NoOfGuests,
                 Status: booking.Status,
                 Message: booking.Message,
-                CreatedDate: booking.CreatedDate
+                CreatedDate: booking.CreatedDate,
+                IsPlaced: booking.IsPlaced
             );
         }
 
