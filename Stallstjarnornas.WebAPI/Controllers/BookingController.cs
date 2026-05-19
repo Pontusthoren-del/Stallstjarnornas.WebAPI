@@ -40,11 +40,12 @@ public class BookingController : ControllerBase
     [FromQuery] int? sittingId,
     [FromQuery] int? week,
     [FromQuery] int? month,
-    [FromQuery] int? year)
+    [FromQuery] int? year,
+    [FromQuery] bool? isPlaced)
     {
         try
         {
-            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year);
+            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year,isPlaced);
             return Ok(result);
         }
         catch (Exception ex)
