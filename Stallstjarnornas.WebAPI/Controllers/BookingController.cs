@@ -40,7 +40,7 @@ public class BookingController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [HttpGet]
+    [HttpGet("Filter-Booking")]
     public async Task<ActionResult<IEnumerable<BookingResponseDto>>> FilterBookings(
     [FromQuery] string? status,
     [FromQuery] DateOnly? date,
