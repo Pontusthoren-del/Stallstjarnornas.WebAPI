@@ -19,6 +19,6 @@ namespace Stallstjarnornas.WebAPI.Interfaces
         Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync();
         Task<BookingResponseDto> UpdateBookingAsync(int id, UpdateBookingDto dto);
         Task DeleteBookingAsync(int id);
-        Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year);
+        Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year,bool? isPlaced);
     }
 }
