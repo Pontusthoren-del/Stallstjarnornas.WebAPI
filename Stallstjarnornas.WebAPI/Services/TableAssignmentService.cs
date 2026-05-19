@@ -27,6 +27,8 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto)
         {
+           
+
             var booking = await _ctx.Bookings.Where(b => b.Id == dto.BookingId).Select(b => new
             {
                 b.Id,
@@ -91,6 +93,25 @@ namespace Stallstjarnornas.WebAPI.Services
 
 
         }
+
+        public async Task<GetAvailableTablesResponseDto> GetAvailableTablesAsync(GetAvailableTablesDto dto)
+        {
+            var bookedTables = await _ctx.TableAssignments
+                .Where(ta => DateOnly.FromDateTime(ta.Booking.BookingDate) == dto.bookingDate && ta.Booking.SittingId == dto.sittingid)
+                .Select(x => x.TableId)
+                .ToListAsync();
+
+            var availableTables = await _ctx.Tables
+               .Where(t => !bookedTables.Contains(t.Id))
+               .Select(t => t.Id)
+               .ToListAsync();
+
+            return new GetAvailableTablesResponseDto(
+                dto.bookingDate,
+                dto.sittingid,
+                availableTables);
+        }
+     
 
 
     }

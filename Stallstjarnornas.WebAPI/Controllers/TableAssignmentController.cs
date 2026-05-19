@@ -3,6 +3,7 @@ using Microsoft.VisualBasic;
 using Stallstjarnornas.WebAPI.DTOs.TableAssignment;
 using Stallstjarnornas.WebAPI.Interfaces;
 
+
 namespace Stallstjarnornas.WebAPI.Controllers
 {
     [ApiController]
@@ -22,5 +23,14 @@ namespace Stallstjarnornas.WebAPI.Controllers
             var result = await _tass.CreateTableAssignmentAsync(dto);
             return Ok(result);
         }
+
+
+        [HttpGet("Find-Available-Tables")]
+        public async Task<ActionResult<GetAvailableTablesResponseDto>> GetAvailableTablesAsync([FromQuery] GetAvailableTablesDto dto)//FromQuery gör att värdena tas från URL:en (det du skriver efter ? i länken)
+        {
+            var result = await _tass.GetAvailableTablesAsync(dto);
+            return Ok(result);
+        }
+        
     }
 }
