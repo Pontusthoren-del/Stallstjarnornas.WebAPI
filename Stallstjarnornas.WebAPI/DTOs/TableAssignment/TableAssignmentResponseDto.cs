@@ -4,15 +4,13 @@ namespace Stallstjarnornas.WebAPI.DTOs.TableAssignment
 
 {
     public record TableAssignmentResponseDto(
-        int Id,
-        
         List<int> TableIds,//Admin ska kunna assigna flera bord för en bokning
-        int BookingNumber,
+        int BookingId,
         string GuestName,
         int NoOfGuests,
         DateOnly BookingDate,
-        TimeOnly SittingStartTime,
-        TimeOnly SittingEndTime
+        int sittingId
+        
     );
 }
 

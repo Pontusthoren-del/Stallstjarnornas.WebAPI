@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.WebEncoders.Testing;
+using Microsoft.IdentityModel.Tokens;
 using Stallstjarnornas.Library.Models;
 using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Booking;
@@ -21,9 +25,17 @@ namespace Stallstjarnornas.WebAPI.Services
             _ctx = ctx;
         }
 
-        public async Task<TableAssignmentResponseDto> AssignTableAsync(CreateTableAssignmentDto dto)
+        public async Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto)
         {
-            var booking = await _ctx.Bookings.FirstOrDefaultAsync(b => b.Id==dto.BookingId);
+            var booking = await _ctx.Bookings.Where(b => b.Id == dto.BookingId).Select(b => new
+            {
+                b.Id,
+                b.BookingDate,
+                b.Guest.Name,
+                b.NoOfGuests,
+                b.SittingId,
+            }
+             ).FirstOrDefaultAsync();
 
             if (booking == null)
             {
@@ -40,9 +52,44 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 tablesNeeded = (noOfGuests + 1) / 2;
             }
-            //logik för att se om alla platser är bokade ligger i booking. 
-           
-            
+            //logik för att se om alla platser är bokade ligger i booking och hanteras inte här. 
+
+            var tablesToAssign = _ctx.Tables.Where(t => dto.TableIds.Contains(t.Id)).ToList();//Hämta alla bord som admin har lagt in
+            if (dto.TableIds == null)
+            {
+                throw new Exception("One or more tables where not found");
+            }
+
+
+            if (tablesToAssign.IsNullOrEmpty())
+            {
+                throw new Exception("No tables found");
+            }
+
+            foreach (var table in tablesToAssign)
+            {
+                if (_ctx.TableAssignments.Any(ta => ta.Table.Id == table.Id && ta.Booking.BookingDate == booking.BookingDate && ta.Booking.SittingId == booking.SittingId))//Kollar ifall det finns någon assignment inlagd med samma bord.
+                {
+                    throw new Exception("Table is allready being used");
+                }
+                if (tablesToAssign.Count() <= tablesNeeded)
+                {
+                    throw new Exception("You need to assign more tables");
+                }
+            }
+
+            var response = new TableAssignmentResponseDto(
+                  dto.TableIds,
+                    booking.Id,
+                    booking.Name,
+                    booking.NoOfGuests,
+                    DateOnly.FromDateTime(booking.BookingDate),
+                    booking.SittingId
+            );
+
+            return response;
+
+
         }
 
 
