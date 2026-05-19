@@ -11,6 +11,7 @@
         int NumberOfGuests,
         string Status,
         string? Message,
-        DateTime CreatedDate
+        DateTime CreatedDate,
+        bool IsPlaced
         );
 }
