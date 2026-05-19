@@ -17,15 +17,27 @@ namespace Stallstjarnornas.WebAPI.Services
         private readonly StallstjarnornasDbContext _ctx;
         private readonly IGuestService _guestService;
 
-        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestServcie)
+        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestService)
         {
             _ctx = ctx;
-            _guestService = guestServcie;
+            _guestService = guestService;
         }
 
-        public Task CancelBookingAsync(int bookingNumber)
+        public async Task CancelBookingAsync(int bookingNumber)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .FirstOrDefaultAsync(b=>b.BookingNumber == bookingNumber);
+            if (booking == null)
+            {
+                throw new Exception("Bokning hittades inte.");
+            }
+            if (booking.Status == "Cancelled")  
+            {
+                throw new Exception("Bokningen är redan avbokad.");
+            }
+
+            booking.Status = "Cancelled";
+            await _ctx.SaveChangesAsync();
         }
 
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
@@ -34,8 +46,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (guest == null)
             {
-                guest = new Guest { Name = dto.Name, Phone = dto.Phone, Email = dto.Email };
-                _ctx.Guests.Add(guest);
+                guest = await _guestService.CreateGuestAsync(dto.Name, dto.Phone, email: dto.Email);
             }
             //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
@@ -51,7 +62,7 @@ namespace Stallstjarnornas.WebAPI.Services
                     && b.Status != "Cancelled")
                     .Sum(b => b.NoOfGuests)
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(); 
 
             //Här ser jag först så sittningen finns, och sen om sittningen är full.
             if (sittingInfo == null)
