@@ -89,7 +89,7 @@ namespace Stallstjarnornas.WebAPI.Services
                     booking.SittingId
             );
 
-            foreach (var tableId in dto.TableIds)
+            foreach (var tableId in dto.TableIds)// Eftersom en bokning kan ha flera bord behöver vi skapa en TableAssignment för varje bord.
             {
                 var assignment = new TableAssignment
                 {
