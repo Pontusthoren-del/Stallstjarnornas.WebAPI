@@ -27,6 +27,8 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto)
         {
+           
+
             var booking = await _ctx.Bookings.Where(b => b.Id == dto.BookingId).Select(b => new
             {
                 b.Id,
@@ -87,10 +89,41 @@ namespace Stallstjarnornas.WebAPI.Services
                     booking.SittingId
             );
 
+            foreach (var tableId in dto.TableIds)// Eftersom en bokning kan ha flera bord behöver vi skapa en TableAssignment för varje bord.
+            {
+                var assignment = new TableAssignment
+                {
+                    TableId = tableId,
+                    BookingId = booking.Id
+                };
+
+                _ctx.TableAssignments.Add(assignment);
+            }
+
+            await _ctx.SaveChangesAsync();
+
             return response;
 
-
         }
+
+        public async Task<GetAvailableTablesResponseDto> GetAvailableTablesAsync(GetAvailableTablesDto dto)
+        {
+            var bookedTables = await _ctx.TableAssignments
+                .Where(ta => DateOnly.FromDateTime(ta.Booking.BookingDate) == dto.bookingDate && ta.Booking.SittingId == dto.sittingid)
+                .Select(x => x.TableId)
+                .ToListAsync();
+
+            var availableTables = await _ctx.Tables
+               .Where(t => !bookedTables.Contains(t.Id))
+               .Select(t => t.Id)
+               .ToListAsync();
+
+            return new GetAvailableTablesResponseDto(
+                dto.bookingDate,
+                dto.sittingid,
+                availableTables);
+        }
+     
 
 
     }
