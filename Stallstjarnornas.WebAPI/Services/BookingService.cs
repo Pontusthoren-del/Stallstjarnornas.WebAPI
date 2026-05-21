@@ -46,7 +46,13 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (guest == null)
             {
-                guest = await _guestService.CreateGuestAsync(dto.Name, dto.Phone, email: dto.Email);
+                guest = new Guest
+                {
+                    Name = dto.Name,
+                    Phone = dto.Phone,
+                    Email = dto.Email
+                };
+                _ctx.Guests.Add(guest);
             }
             //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
