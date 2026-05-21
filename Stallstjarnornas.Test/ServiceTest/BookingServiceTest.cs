@@ -1,10 +1,11 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stallstjarnornas.Library.Models;
 using Stallstjarnornas.Test.TestHelpers;
 using Stallstjarnornas.WebAPI.Data;
+using Stallstjarnornas.WebAPI.DTOs.Booking;
 using Stallstjarnornas.WebAPI.Interfaces;
 using Stallstjarnornas.WebAPI.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Stallstjarnornas.Test;
 
@@ -128,5 +129,95 @@ public class BookingServiceTest
         Assert.AreEqual("Confirmed", result.Status);
         Assert.AreEqual("Glutenallergi", result.Message);
         Assert.IsFalse(result.IsPlaced);
+    }
+
+    [TestMethod]
+    public async Task CreateBooking_NewGuest_ShouldCreateBookingAndReturnDto()
+    {
+        // ARRANGE
+        // Mockar GetGuestEntityByEmailAsync - returnerar null eftersom gästen inte finns sedan tidigare
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("nytt_test@test.com"))
+            .ReturnsAsync((Guest?)null);
+
+        // Mockar CreateGuestAsync - simulerar att en ny gäst skapas och returneras
+        _mockGuestService
+        .Setup(g => g.CreateGuestAsync("Ny Person", "070-000 00 00", "ny@test.com"))
+        .ReturnsAsync(new Guest { Id = 3, Name = "Ny Person", Phone = "070-000 00 00", Email = "ny@test.com" });
+
+        // Skapar en DTO med bokningsinformation som en ny gäst skulle skicka in
+        // Sittning 1 finns redan i databasen via TestDataHelper
+        var dto = new CreateBookingDto(
+            Name: "Ny Person",
+            Phone: "070-000 00 00",
+            Email: "ny@test.com",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingId: 1,
+            Message: null
+            );
+
+        // ACT
+        // Kör den riktiga CreateBookingAsync-metoden med vår testdata
+        var result = await _service.CreateBookingAsync(dto);
+
+
+        // ASSERT
+        // Kontrollerar att resultatet inte är null
+        Assert.IsNotNull(result);
+        // Kontrollerar att gästnamnet är korrekt
+        Assert.AreEqual("Ny Person", result.GuestName);
+        // Kontrollerar att antal gäster stämmer
+        Assert.AreEqual(2, result.NumberOfGuests);
+        // En ny bokning ska alltid ha status Pending
+        Assert.AreEqual("Pending", result.Status);
+        // En ny bokning är aldrig placerad vid ett bord
+        Assert.IsFalse(result.IsPlaced);
+    }
+
+    [TestMethod]
+    public async Task CreateBooking_ExistingGuest_ShouldReuseGuest()
+    {
+        // Arrange
+        // Hämtar en redan existerande gäst från InMemory-databasen.
+        // Detta är viktigt eftersom EF Core redan trackar entityn.
+        // Om vi istället hade skapat en ny Guest med samma Id
+        // hade EF Core kastat ett tracking-fel.
+
+        var existingGuest = await _ctx.Guests.FindAsync(1);
+
+        // Mockar GuestService så att den returnerar den befintliga gästen
+        // när bokningen görs med samma emailadress.
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("anna@test.com"))
+            .ReturnsAsync(existingGuest);
+
+        // DTO som simulerar en bokning från en redan registrerad gäst.
+        var dto = new CreateBookingDto(
+            Name: "Anna Lindqvist",
+            Phone: "070-123 45 67",
+            Email: "anna@test.com",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingId: 1,
+            Message: null
+        );
+
+        //Act
+        var result = await _service.CreateBookingAsync(dto);
+
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Anna Lindqvist", result.GuestName);
+
+
+        // Verifiera att CreateGuestAsync ALDRIG anropades - gästen fanns redan
+        //Vi har aldrig använt detta innan,denna kontrollerar att CreateGuestAsync aldrig används då gästen REDAN fanns!
+        _mockGuestService.Verify(g => g.CreateGuestAsync(
+        It.IsAny<string>(),
+        It.IsAny<string>(),
+        It.IsAny<string>()),
+        Times.Never
+        );
     }
 }
