@@ -80,6 +80,16 @@ namespace Stallstjarnornas.Test.ServiceTest
             Assert.AreEqual("anna@test.com", result.Email);
     }
 
+        [TestMethod]
+        public async Task GetGuestEntityByEmailAsync_ShouldReturnNull_WhenEmailDoesNotExist()
+        {
+            // Act
+            var result = await _service.GetGuestEntityByEmailAsync("finns@inte.com");
+
+            // Assert
+            Assert.IsNull(result);
+        }
+    }
 }
 
 
