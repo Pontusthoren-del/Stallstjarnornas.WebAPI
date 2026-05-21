@@ -16,9 +16,10 @@ public class BookingServiceTest
     private Mock<IGuestService> _mockGuestService;
 
     [TestInitialize]
-    public void Setup()
+    public async Task Setup()
     {
         _ctx = DbContextFactory.CreateInMemoryContext();
+        await TestDataHelper.SeedBasicDataAsync(_ctx);
         _mockGuestService = new Mock<IGuestService>();
         _service = new BookingService(_ctx, _mockGuestService.Object);
     }
@@ -95,5 +96,37 @@ public class BookingServiceTest
         {
             Assert.AreEqual("Bokning hittades inte.", ex.Message);
         }
+    }
+
+    [TestMethod]
+    public async Task GetBookingByNumber_ShouldReturnCorrectBooking()
+    {
+        // Arrange
+        var booking = new Booking
+        {
+            Id = 1,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 6, 1),
+            NoOfGuests = 2,
+            Status = "Confirmed",
+            BookingNumber = 1001,
+            CreatedDate = DateTime.Now,
+            Message = "Glutenallergi"
+        };
+        _ctx.Bookings.Add(booking);
+        await _ctx.SaveChangesAsync();
+
+        // Act
+        var result = await _service.GetBookingByNumberAsync(1001);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1001, result.BookingNumber);
+        Assert.AreEqual("Anna Lindqvist", result.GuestName);
+        Assert.AreEqual(2, result.NumberOfGuests);
+        Assert.AreEqual("Confirmed", result.Status);
+        Assert.AreEqual("Glutenallergi", result.Message);
+        Assert.IsFalse(result.IsPlaced);
     }
 }
