@@ -54,15 +54,20 @@ namespace Stallstjarnornas.Test.ServiceTest
         [TestMethod]
         public async Task GetAllGuestAsync_ReturnAllGuest()
         {
-            var guest = new Guest
+            _ctx.Guests.Add(new Guest
             {
                 Name = "Viktor Andersson",
                 Phone = "1234134324",
                 Email = "häst@häst.polle"
-            };
-            _ctx.Guests.Add(guest);
-            _ctx.SaveChanges();
+            });
+            await _ctx.SaveChangesAsync();
 
+            var result = await _service.GetAllGuestsAsync();
+
+            Assert.AreEqual(3, result.Count());
+            Assert.IsTrue(result.Any(g => g.Name == "Anna Lindqvist"));
+            Assert.IsTrue(result.Any(g => g.Name == "Erik Johansson"));
+            Assert.IsTrue(result.Any(g => g.Name == "Viktor Andersson"));
         }
         
     }
