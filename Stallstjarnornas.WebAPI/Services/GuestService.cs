@@ -22,7 +22,7 @@ namespace Stallstjarnornas.WebAPI.Services
             _context = context;
         }
 
-    
+
 
         public async Task<IEnumerable<GuestDto>> GetAllGuestsAsync()
         {
@@ -53,6 +53,26 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             return await _context.Guests
                 .FirstOrDefaultAsync(g => g.Email == email);
+        }
+
+        public async Task<GuestDto?> UpdateGuestAsync(int id, UpdateGuestDto dto)
+        {
+            var guest = await _context.Guests.FindAsync(id);
+
+            if (guest == null) return null;
+
+            guest.Name = dto.Name;
+            guest.Phone = dto.Phone;
+            guest.Email = dto.Email;
+
+            await _context.SaveChangesAsync();
+
+            return new GuestDto(
+                guest.Id,
+                guest.Name,
+                guest.Phone,
+                guest.Email
+                );
         }
     }
 }
