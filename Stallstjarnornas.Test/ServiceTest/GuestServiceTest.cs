@@ -70,6 +70,14 @@ namespace Stallstjarnornas.Test.ServiceTest
             Assert.IsTrue(result.Any(g => g.Name == "Viktor Andersson"));
         }
         
+        [TestMethod]
+        public async Task GetGuestEntityByEmailAsync_ReturnMatchingEmail()
+        {
+            var result = await _service.GetGuestEntityByEmailAsync("anna@test.com");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Anna Lindqvist", result.Name);
+            Assert.AreEqual("anna@test.com", result.Email);
     }
 
 }
