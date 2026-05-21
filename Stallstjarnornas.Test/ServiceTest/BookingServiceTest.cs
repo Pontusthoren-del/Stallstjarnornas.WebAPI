@@ -137,14 +137,10 @@ public class BookingServiceTest
         // ARRANGE
         // Mockar GetGuestEntityByEmailAsync - returnerar null eftersom gästen inte finns sedan tidigare
         _mockGuestService
-            .Setup(g => g.GetGuestEntityByEmailAsync("nytt_test@test.com"))
+            .Setup(g => g.GetGuestEntityByEmailAsync("ny@test.com"))
             .ReturnsAsync((Guest?)null);
 
-        // Mockar CreateGuestAsync - simulerar att en ny gäst skapas och returneras
-        _mockGuestService
-        .Setup(g => g.CreateGuestAsync("Ny Person", "070-000 00 00", "ny@test.com"))
-        .ReturnsAsync(new Guest { Id = 3, Name = "Ny Person", Phone = "070-000 00 00", Email = "ny@test.com" });
-
+        
         // Skapar en DTO med bokningsinformation som en ny gäst skulle skicka in
         // Sittning 1 finns redan i databasen via TestDataHelper
         var dto = new CreateBookingDto(
@@ -190,7 +186,7 @@ public class BookingServiceTest
         // när bokningen görs med samma emailadress.
         _mockGuestService
             .Setup(g => g.GetGuestEntityByEmailAsync("anna@test.com"))
-            .ReturnsAsync(existingGuest);
+             .ReturnsAsync(existingGuest); 
 
         // DTO som simulerar en bokning från en redan registrerad gäst.
         var dto = new CreateBookingDto(
@@ -211,13 +207,10 @@ public class BookingServiceTest
         Assert.AreEqual("Anna Lindqvist", result.GuestName);
 
 
-        // Verifiera att CreateGuestAsync ALDRIG anropades - gästen fanns redan
-        //Vi har aldrig använt detta innan,denna kontrollerar att CreateGuestAsync aldrig används då gästen REDAN fanns!
-        _mockGuestService.Verify(g => g.CreateGuestAsync(
-        It.IsAny<string>(),
-        It.IsAny<string>(),
-        It.IsAny<string>()),
-        Times.Never
-        );
+        // Verifierar att det fortfarande bara finns EN gäst med Annas email i databasen
+        // Detta bevisar att BookingService återanvände den befintliga gästen istället för att skapa en dubblett
+        var guestCount = _ctx.Guests.Count(g => g.Email == "anna@test.com");
+        Assert.AreEqual(1, guestCount);
+        
     }
 }
