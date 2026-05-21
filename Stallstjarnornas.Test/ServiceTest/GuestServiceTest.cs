@@ -41,18 +41,18 @@ namespace Stallstjarnornas.Test.ServiceTest
         }
 
         [TestMethod]
-        public async Task GetUserByIdAsync_WhenGuestDoesNotExist_ReturnNull()
+        public async Task GetGuestByIdAsync_WhenGuestDoesNotExist_ReturnNull()
         {
            
             //Act
-            var result = await _service.GetGuestByIdAsync(3);
+            var result = await _service.GetGuestByIdAsync(999);
 
             //Assert
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public async Task GetAllUsersAsync_ReturnAllGuest()
+        public async Task GetAllGuestAsync_ReturnAllGuest()
         {
             var guest = new Guest
             {
