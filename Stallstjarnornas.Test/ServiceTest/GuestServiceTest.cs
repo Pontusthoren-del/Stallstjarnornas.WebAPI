@@ -13,9 +13,10 @@ namespace Stallstjarnornas.Test.ServiceTest
         private StallstjarnornasDbContext _ctx;
         private GuestService _service;
         [TestInitialize]
-        public void SetUp()
+        public async Task SetUp()
         {
             _ctx = DbContextFactory.CreateInMemoryContext();
+            await TestHelpers.TestDataHelper.SeedBasicDataAsync(_ctx);
             _service = new GuestService(_ctx);
         }
 
@@ -29,35 +30,39 @@ namespace Stallstjarnornas.Test.ServiceTest
         public async Task GetGuestByIdAsync_ShouldReturnGuest_WhenGuestExists()
         {
             // Arrange
-            var guest = new Guest
-            {
-                Id = 1,
-                Name = "Test Testersson",
-                Phone = "1234567891",
-                Email = "Test@test.test"
-            };
-            
-            _ctx.Guests.Add(guest);
-            await _ctx.SaveChangesAsync();
 
             // Act
             var result = await _service.GetGuestByIdAsync(1);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Test Testersson", result.Name);
-            Assert.AreEqual("Test@test.test", result.Email); 
+            Assert.AreEqual("Anna Lindqvist", result.Name);
+            Assert.AreEqual("anna@test.com", result.Email); 
         }
 
         [TestMethod]
         public async Task GetUserByIdAsync_WhenGuestDoesNotExist_ReturnNull()
         {
-            //Arrange
+           
             //Act
-            var result = await _service.GetGuestByIdAsync(-1);
+            var result = await _service.GetGuestByIdAsync(3);
 
             //Assert
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task GetAllUsersAsync_ReturnAllGuest()
+        {
+            var guest = new Guest
+            {
+                Name = "Viktor Andersson",
+                Phone = "1234134324",
+                Email = "häst@häst.polle"
+            };
+            _ctx.Guests.Add(guest);
+            _ctx.SaveChanges();
+
         }
         
     }
