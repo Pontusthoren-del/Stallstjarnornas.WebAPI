@@ -30,5 +30,14 @@ namespace Stallstjarnornas.WebAPI.Controllers
             var guests = await _service.GetAllGuestsAsync();
             return Ok(guests);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<GuestDto>> UpdateGuest(int id, UpdateGuestDto dto)
+        {
+            var guest = await _service.UpdateGuestAsync(id, dto);
+            if (guest == null) return NotFound();
+            return Ok(guest);
+        }
+
     }
 }
