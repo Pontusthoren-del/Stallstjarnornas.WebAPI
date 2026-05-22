@@ -35,19 +35,7 @@ public class BookingServiceTest
     public async Task CancelBooking_ShouldSetStatusToCancelled()
     {
         // Arrange
-        var booking = new Booking
-        {
-            Id = 1,
-            GuestId = 1,
-            SittingId = 1,
-            BookingDate = new DateTime(2026, 6, 1),
-            NoOfGuests = 2,
-            Status = "Confirmed",
-            BookingNumber = 1001,
-            CreatedDate = DateTime.Now
-        };
-        _ctx.Bookings.Add(booking);
-        await _ctx.SaveChangesAsync();
+        //Bokningen 1001 finns redan via TestDataHelper
 
         // Act
         await _service.CancelBookingAsync(1001);
@@ -60,20 +48,11 @@ public class BookingServiceTest
     [TestMethod]
     public async Task CancelBooking_AlreadyCancelled_ShouldThrowException()
     {
-        var booking = new Booking
-        {
-            Id = 2,
-            GuestId = 1,
-            SittingId = 1,
-            BookingDate = new DateTime(2026, 6, 1),
-            NoOfGuests = 2,
-            Status = "Cancelled",
-            BookingNumber = 1002,
-            CreatedDate = DateTime.Now
-        };
-        _ctx.Bookings.Add(booking);
-        await _ctx.SaveChangesAsync();
 
+        //Arrange
+        //Bokningen 1002 finns redan och är Cancelled via TestDataHelper
+
+        //Act+Assert
         try
         {
             await _service.CancelBookingAsync(1002);
@@ -88,6 +67,8 @@ public class BookingServiceTest
     [TestMethod]
     public async Task CancelBooking_NotFound_ShouldThrowException()
     {
+        // Arrange - bokning 9999 finns inte i databasen 
+
         try
         {
             await _service.CancelBookingAsync(9999);
@@ -103,20 +84,7 @@ public class BookingServiceTest
     public async Task GetBookingByNumber_ShouldReturnCorrectBooking()
     {
         // Arrange
-        var booking = new Booking
-        {
-            Id = 1,
-            GuestId = 1,
-            SittingId = 1,
-            BookingDate = new DateTime(2026, 6, 1),
-            NoOfGuests = 2,
-            Status = "Confirmed",
-            BookingNumber = 1001,
-            CreatedDate = DateTime.Now,
-            Message = "Glutenallergi"
-        };
-        _ctx.Bookings.Add(booking);
-        await _ctx.SaveChangesAsync();
+        // Bokningen 1001 finns redan via TestDataHelper
 
         // Act
         var result = await _service.GetBookingByNumberAsync(1001);
@@ -140,9 +108,8 @@ public class BookingServiceTest
             .Setup(g => g.GetGuestEntityByEmailAsync("ny@test.com"))
             .ReturnsAsync((Guest?)null);
 
-        
-        // Skapar en DTO med bokningsinformation som en ny gäst skulle skicka in
-        // Sittning 1 finns redan i databasen via TestDataHelper
+        // Sittning 1 finns redan via TestDataHelper 
+        // ny@test.com finns INTE i databasen - testar att ny gäst skapas
         var dto = new CreateBookingDto(
             Name: "Ny Person",
             Phone: "070-000 00 00",
@@ -175,20 +142,21 @@ public class BookingServiceTest
     public async Task CreateBooking_ExistingGuest_ShouldReuseGuest()
     {
         // Arrange
-        // Hämtar en redan existerande gäst från InMemory-databasen.
+        // Hämtar Anna (Id=1) som redan finns i InMemory-databasen via TestDataHelper.
         // Detta är viktigt eftersom EF Core redan trackar entityn.
         // Om vi istället hade skapat en ny Guest med samma Id
         // hade EF Core kastat ett tracking-fel.
-
         var existingGuest = await _ctx.Guests.FindAsync(1);
 
-        // Mockar GuestService så att den returnerar den befintliga gästen
-        // när bokningen görs med samma emailadress.
+        // Mockar IGuestService så att den returnerar den befintliga gästen
+        // när bokningen görs med Annas emailadress.
+        // Detta simulerar att gästen redan finns registrerad i systemet.
         _mockGuestService
             .Setup(g => g.GetGuestEntityByEmailAsync("anna@test.com"))
-             .ReturnsAsync(existingGuest); 
+            .ReturnsAsync(existingGuest);
 
         // DTO som simulerar en bokning från en redan registrerad gäst.
+        // Sittning 1 finns redan via TestDataHelper 
         var dto = new CreateBookingDto(
             Name: "Anna Lindqvist",
             Phone: "070-123 45 67",
@@ -199,18 +167,103 @@ public class BookingServiceTest
             Message: null
         );
 
-        //Act
+        // Act
+        // Kör den riktiga CreateBookingAsync med en redan registrerad gäst
         var result = await _service.CreateBookingAsync(dto);
 
-        //Assert
+        // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual("Anna Lindqvist", result.GuestName);
 
-
-        // Verifierar att det fortfarande bara finns EN gäst med Annas email i databasen
-        // Detta bevisar att BookingService återanvände den befintliga gästen istället för att skapa en dubblett
+        // Verifierar att det fortfarande bara finns EN gäst med Annas email i databasen.
+        // Detta bevisar att BookingService återanvände den befintliga gästen
+        // istället för att skapa en dubblett.
         var guestCount = _ctx.Guests.Count(g => g.Email == "anna@test.com");
         Assert.AreEqual(1, guestCount);
-        
+    }
+
+    [TestMethod]
+    public async Task CreateBooking_SittingFull_ShouldThrowExepction()
+    {
+        //Arrange
+        //Mockar GetGuestEntityByEmailAsync - retunerar null(ny gäst)
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("ny@test.com"))
+            .ReturnsAsync((Guest?)null);
+
+        //Fyller upp sittningen 1 med 50 gäster (max)
+        //Använder mig av ID 3 här
+        //För i TestDataHelper så har vi redan 2 bokningar med ID 1 o 2 
+        //Annars blir det fel.
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 6, 1),
+            NoOfGuests = 50, // ← fullt!
+            Status = "Confirmed",
+            BookingNumber = 1001,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        //Här försöker jag då boka på 2 nya gäster till på första sittningen
+        //Då ska jag få tillbaka felmeddelandet att det är fullt
+        //Och det får jag
+        //Testet är OK!
+        var dto = new CreateBookingDto(
+            Name: "Ny Person",
+            Phone: "070-000 00 00",
+            Email: "ny@test.com",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingId: 1,
+            Message: null
+        );
+
+        //Act + Assert
+        try
+        {
+            await _service.CreateBookingAsync(dto);
+            Assert.Fail("Skulle ha kastat ett execption");
+        }
+        //Viktigt att man skriver EXAKT likadant som i sin metod.
+        //MISSADE en punkt.. Så då blev testet fel först
+        //Men nu funka det med en punkt... 
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Sittningen är fullbokad.", ex.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task CreateBooking_SittingNotFound_ShouldThrowExepction()
+    {
+        //Arrange
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("ny@test.com"))
+            .ReturnsAsync((Guest?)null);
+
+        var dto = new CreateBookingDto(
+            Name: "Ny Person",
+            Phone: "070-000 00 00",
+            Email: "ny@test.com",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingId: 99,
+            Message: null
+            );
+
+        //Act+Assert
+        try
+        {
+            await _service.CreateBookingAsync(dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Sittningen finns inte.", ex.Message);
+        }
     }
 }
