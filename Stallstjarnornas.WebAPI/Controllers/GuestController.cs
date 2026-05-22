@@ -39,5 +39,14 @@ namespace Stallstjarnornas.WebAPI.Controllers
             return Ok(guest);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<GuestDto>> RegisterGuest(CreateGuestDto dto)
+        {
+            var guest = await _service.RegisterGuestAsync(dto);
+            if (guest == null) return Conflict("En gäst med denna email finns redan");
+            return CreatedAtAction(nameof(GetGuest), new { id = guest.Id }, guest);
+
+        }
+
     }
 }
