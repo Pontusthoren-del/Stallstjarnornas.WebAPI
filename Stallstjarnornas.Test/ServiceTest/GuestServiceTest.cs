@@ -1,9 +1,11 @@
-﻿using Stallstjarnornas.WebAPI.Data;
-using Stallstjarnornas.WebAPI.Services;
+﻿using Stallstjarnornas.Library.Models;
 using Stallstjarnornas.Test.TestHelpers;
+using Stallstjarnornas.WebAPI.Data;
+using Stallstjarnornas.WebAPI.DTOs.Guest;
+using Stallstjarnornas.WebAPI.Services;
+using System.ComponentModel.DataAnnotations;
 
 using System.Threading.Tasks;
-using Stallstjarnornas.Library.Models;
 
 namespace Stallstjarnornas.Test.ServiceTest
 {
@@ -89,8 +91,45 @@ namespace Stallstjarnornas.Test.ServiceTest
             // Assert
             Assert.IsNull(result);
         }
+
+        [TestMethod]
+        public async Task UpdateGuestAsync_ShouldUpdateAndReturnGuest_WhenGuestExists()
+        {
+            //Arrange
+            var dto = new UpdateGuestDto(
+                "Anna Svensson",
+                "1234568789",
+                "Anna@Banana.se"
+                );
+
+            //Act 
+            var result = await _service.UpdateGuestAsync(1, dto);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Anna Svensson", result.Name);
+            Assert.AreEqual("1234568789", result.Phone);
+            Assert.AreEqual("Anna@Banana.se", result.Email);
+        }
+
+        [TestMethod]
+        public async Task UpdateGuestAsync_ShouldReturnNull_WhenGuestDoesNotExist()
+        {
+            // Arrange
+            var dto = new UpdateGuestDto(
+                "Finns Inte",
+                "0000000000",
+                "finns@inte.com"
+            );
+
+            // Act
+            var result = await _service.UpdateGuestAsync(999, dto);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
-}
+}   
 
 
 

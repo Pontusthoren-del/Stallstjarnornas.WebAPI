@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Stallstjarnornas.WebAPI.Services
 {
@@ -53,6 +54,28 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             return await _context.Guests
                 .FirstOrDefaultAsync(g => g.Email == email);
+        }
+
+        public async Task<GuestDto?> RegisterGuestAsync(CreateGuestDto dto)
+        {
+            var guest = await GetGuestEntityByEmailAsync(dto.Email);
+            if (guest != null) return null;
+
+            var newGuest = new Guest
+            {
+                Name = dto.Name,
+                Phone = dto.Phone,
+                Email = dto.Email
+            };
+            _context.Guests.Add(newGuest);
+            await _context.SaveChangesAsync();
+
+            return new GuestDto(
+                newGuest.Id,
+                newGuest.Name,
+                newGuest.Phone,
+                newGuest.Email
+            );
         }
 
         public async Task<GuestDto?> UpdateGuestAsync(int id, UpdateGuestDto dto)
