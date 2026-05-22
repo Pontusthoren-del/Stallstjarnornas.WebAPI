@@ -2,6 +2,7 @@
 
 using Stallstjarnornas.WebAPI.DTOs.Guest;
 using Stallstjarnornas.WebAPI.Interfaces;
+using System.Diagnostics.Contracts;
 
 namespace Stallstjarnornas.WebAPI.Controllers
 {
@@ -45,6 +46,14 @@ namespace Stallstjarnornas.WebAPI.Controllers
             var guest = await _service.RegisterGuestAsync(dto);
             if (guest == null) return Conflict("En gäst med denna email finns redan");
             return CreatedAtAction(nameof(GetGuest), new { id = guest.Id }, guest);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGuest(int id)
+        {
+            var deleted = await _service.DeleteGuestAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }
