@@ -128,8 +128,6 @@ namespace Stallstjarnornas.Test.ServiceTest
             // Assert
             Assert.IsNull(result);
         }
-
-
     }
 }   
 
