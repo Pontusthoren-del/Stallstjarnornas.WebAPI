@@ -11,8 +11,6 @@ namespace Stallstjarnornas.WebAPI.Interfaces
         Task<GuestDto?> GetGuestByIdAsync(int id);
         Task<IEnumerable<GuestDto>> GetAllGuestsAsync();
         Task<Guest?> GetGuestEntityByEmailAsync(string email);
-
         Task<GuestDto?> RegisterGuestAsync(CreateGuestDto dto);
-
     }
 }
