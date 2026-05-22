@@ -16,6 +16,33 @@ public static class TestDataHelper
         ctx.Tables.Add(new Table { Id = 1, Seats = 2 });
         ctx.Tables.Add(new Table { Id = 2, Seats = 2 });
 
+        // Confirmed bokning - används av CancelBooking och GetBookingByNumber
+        ctx.Bookings.Add(new Booking
+        {
+            Id = 1,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 6, 1),
+            NoOfGuests = 2,
+            Status = "Confirmed",
+            BookingNumber = 1001,
+            CreatedDate = DateTime.Now,
+            Message = "Glutenallergi"
+        });
+
+        // Cancelled bokning - används av CancelBooking_AlreadyCancelled
+        ctx.Bookings.Add(new Booking
+        {
+            Id = 2,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 6, 1),
+            NoOfGuests = 2,
+            Status = "Cancelled",
+            BookingNumber = 1002,
+            CreatedDate = DateTime.Now
+        });
+
         await ctx.SaveChangesAsync();
     }
 }
