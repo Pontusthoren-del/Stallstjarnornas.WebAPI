@@ -45,8 +45,6 @@ namespace Stallstjarnornas.WebAPI.Controllers
             var guest = await _service.RegisterGuestAsync(dto);
             if (guest == null) return Conflict("En gäst med denna email finns redan");
             return CreatedAtAction(nameof(GetGuest), new { id = guest.Id }, guest);
-
         }
-
     }
 }
