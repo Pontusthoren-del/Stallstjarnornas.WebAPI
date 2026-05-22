@@ -7,7 +7,7 @@ using Stallstjarnornas.WebAPI.DTOs.Booking;
 using Stallstjarnornas.WebAPI.Interfaces;
 using Stallstjarnornas.WebAPI.Services;
 
-namespace Stallstjarnornas.Test;
+namespace Stallstjarnornas.Test.ServiceTest;
 
 [TestClass]
 public class BookingServiceTest
