@@ -23,7 +23,15 @@ namespace Stallstjarnornas.WebAPI.Services
             _context = context;
         }
 
+        public async Task<bool> DeleteGuestAsync(int id)
+        {
+            var guest = await _context.Guests.FindAsync(id);
+            if (guest == null) return false;
 
+            _context.Guests.Remove(guest);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<IEnumerable<GuestDto>> GetAllGuestsAsync()
         {
@@ -97,5 +105,8 @@ namespace Stallstjarnornas.WebAPI.Services
                 guest.Email
                 );
         }
+
+
+
     }
 }
