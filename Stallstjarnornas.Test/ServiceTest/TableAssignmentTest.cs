@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stallstjarnornas.Library.Models;
@@ -53,14 +54,14 @@ namespace Stallstjarnornas.Test.ServiceTest
             var assignment = new GetAvailableTablesDto(new DateOnly(2026, 5, 10),
                 1);
             var fakeResponse = new GetAvailableTablesResponseDto(assignment.bookingDate, assignment.sittingid, new List<int>() { 1, 2 });
-            
+
             //Om någon anropar GetAvailableTablesAsync med exakt detta assignment, så ska mocken svara med fakeValue.
             _mockTableAssignmentService.Setup(tas => tas.GetAvailableTablesAsync(assignment))
-                .ReturnsAsync(fakeResponse); 
+                .ReturnsAsync(fakeResponse);
 
 
             //Act
-            var result= await _controller.GetAvailableTablesAsync(assignment);
+            var result = await _controller.GetAvailableTablesAsync(assignment);
             var comparingResult = result.Result as OkObjectResult;//måste "plocka ut" svaret ur http-wrapper för svaret är ett actionresult och inte en dto
             //Assert
             Assert.AreEqual(fakeResponse, comparingResult.Value);
@@ -74,7 +75,7 @@ namespace Stallstjarnornas.Test.ServiceTest
         {
             //Arrange
             //Fejkad Bokning
-            var fakeBooking=_ctx.Bookings.Add(new Booking
+            var fakeBooking = _ctx.Bookings.Add(new Booking
             {
                 Id = 3,
                 GuestId = 2,
@@ -93,17 +94,50 @@ namespace Stallstjarnornas.Test.ServiceTest
 
             //Act
             TableAssignmentService _tas = new TableAssignmentService(_ctx);
-            var result= await _tas.CreateTableAssignmentAsync(fakeTableAssignment);
-            var expected = new TableAssignmentResponseDto(new List<int>() { 1}, 3,"woop woopsson",2,new DateOnly(2026,06,01),1);
+            var result = await _tas.CreateTableAssignmentAsync(fakeTableAssignment);
+            var expected = new TableAssignmentResponseDto(new List<int>() { 1 }, 3, "woop woopsson", 2, new DateOnly(2026, 06, 01), 1);
             //Assert
             Assert.AreEqual(result.BookingId, expected.BookingId, "Correct input should yield correct response");
-            CollectionAssert.AreEqual(result.TableIds,expected.TableIds ,"Correct input should yield correct response");//collection assert för att det är listor
+            CollectionAssert.AreEqual(result.TableIds, expected.TableIds, "Correct input should yield correct response");//collection assert för att det är listor
 
         }
 
         [TestMethod]
         public async Task CreateNewAssignment_WithAllreadyBookedTables_ShouldThrowException()
         {
+            //Arrange
+            //Fejkad bokning (använder guestID 2 som är Erik i testdata)
+            var fakeBooking = _ctx.Bookings.Add(new Booking
+            {
+                Id = 3,
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 6, 1),
+                NoOfGuests = 2,
+                Status = "Confirmed",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+            //Fejkad tableassigmnet sedan innan 
+            var fakeOldTableAssignment = _ctx.TableAssignments.Add(new TableAssignment { TableId = 1, BookingId = 1 });
+
+            await _ctx.SaveChangesAsync();
+
+            //Fejkat DTO-inskick
+            var fakeNewTableAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1 });
+
+            //Act
+            //Assert
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+            try
+            {
+                await _tas.CreateTableAssignmentAsync(fakeNewTableAssignment);
+                Assert.Fail("Skulle ha givit exception");
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("Table is allready being used", ex.Message);
+            }
 
 
         }
@@ -134,7 +168,7 @@ namespace Stallstjarnornas.Test.ServiceTest
 
         }
 
-        
+
 
 
 
