@@ -215,6 +215,21 @@ namespace Stallstjarnornas.Test.ServiceTest
         [TestMethod]
         public async Task CreateNewAssignment_WithNoBookingFound_ShouldThrowException()
         {
+            //Faketablesassigmnet dto
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 2 });
+            await _ctx.SaveChangesAsync();
+            //Act
+            var _tas = new TableAssignmentService(_ctx);
+            //Assert
+            try
+            {
+                await _tas.CreateTableAssignmentAsync(testAssignment);
+                Assert.Fail("Should have thrown exception");
+            }
+            catch (Exception _ex)
+            {
+                Assert.AreEqual("Booking not found", _ex.Message);
+            }
 
 
         }
