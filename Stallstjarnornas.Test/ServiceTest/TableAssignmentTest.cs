@@ -23,11 +23,12 @@ namespace Stallstjarnornas.Test.ServiceTest
 
 
         [TestInitialize]
-        public void Setup()
+        public async Task Setup()
         {
             _ctx = DbContextFactory.CreateInMemoryContext();
             _mockTableAssignmentService = new Mock<ITableAssignmentService>();
             _controller = new TableAssignmentController(_mockTableAssignmentService.Object);//.objeckt är själva interfacet som ska återspeglas
+            await TestDataHelper.SeedBasicDataAsync(_ctx);
         }
 
         [TestCleanup]
@@ -64,5 +65,79 @@ namespace Stallstjarnornas.Test.ServiceTest
             //Assert
             Assert.AreEqual(fakeResponse, comparingResult.Value);
         }
+
+
+        //ServiceTester
+        [TestMethod]
+        //Testet använder sig av customer id "2" från seeddata
+        public async Task CreateNewAssignment_WithCorrectInput_ShouldReturnResponseDTO()
+        {
+            //Arrange
+            //Fejkad Bokning
+            var fakeBooking=_ctx.Bookings.Add(new Booking
+            {
+                Id = 3,
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 6, 1),
+                NoOfGuests = 2,
+                Status = "Confirmed",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+
+            await _ctx.SaveChangesAsync();
+            //Fejkat DTO-inskick
+            var fakeTableAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1 });
+
+
+            //Act
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+            var result= await _tas.CreateTableAssignmentAsync(fakeTableAssignment);
+            var expected = new TableAssignmentResponseDto(new List<int>() { 1}, 3,"woop woopsson",2,new DateOnly(2026,06,01),1);
+            //Assert
+            Assert.AreEqual(result.BookingId, expected.BookingId, "Correct input should yield correct response");
+            CollectionAssert.AreEqual(result.TableIds,expected.TableIds ,"Correct input should yield correct response");//collection assert för att det är listor
+
+        }
+
+        [TestMethod]
+        public async Task CreateNewAssignment_WithAllreadyBookedTables_ShouldThrowException()
+        {
+
+
+        }
+
+        [TestMethod]
+        public async Task CreateNewAssignment_WithTableIDThatDontExist_ShouldThrowException()
+        {
+
+
+        }
+        [TestMethod]
+        public async Task CreateNewAssignment_WithLessTablesThanNeededForBooking_ShouldThrowException()
+        {
+
+
+        }
+        [TestMethod]
+        public async Task CreateNewAssignment_WithNoBookingFound_ShouldThrowException()
+        {
+
+
+        }
+
+        [TestMethod]
+        public async Task CreateNewAssignment_WithNoTablesProvided_ShouldThrowException()
+        {
+
+
+        }
+
+        
+
+
+
+
     }
 }
