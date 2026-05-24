@@ -57,6 +57,10 @@ namespace Stallstjarnornas.WebAPI.Services
             //logik för att se om alla platser är bokade ligger i booking och hanteras inte här. 
 
             var tablesToAssign = _ctx.Tables.Where(t => dto.TableIds.Contains(t.Id)).ToList();//Hämta alla bord som admin har lagt in i sitt anrop för att se att dom existerar
+            if (dto.TableIds.Distinct().Count() != dto.TableIds.Count())
+            {
+                throw new Exception("You assigned one or more tables more than once");
+            }
             if (tablesToAssign.Count !=dto.TableIds.Count)
             {
                 throw new Exception("One or more tables where not found");
@@ -78,6 +82,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 {
                     throw new Exception("You need to assign more tables");
                 }
+             
             }
 
             var response = new TableAssignmentResponseDto(
