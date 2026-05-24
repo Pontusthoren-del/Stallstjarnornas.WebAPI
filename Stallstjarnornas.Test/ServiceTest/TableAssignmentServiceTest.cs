@@ -237,7 +237,35 @@ namespace Stallstjarnornas.Test.ServiceTest
         [TestMethod]
         public async Task CreateNewAssignment_WithNoTablesProvided_ShouldThrowException()
         {
-
+            //Arrange
+            //Måste slänga in bokningen i databasen för att servicen ska kunna hitta den. 
+            //Hämtar guest från seed pga slippa skriva för mycket
+            var fakeBooking = _ctx.Add(new Booking
+            {
+                Id = 3,
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 6, 1),
+                NoOfGuests = 1,
+                Status = "Confirmed",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+            //Faketablesassigmnet dto
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() {  });
+            await _ctx.SaveChangesAsync();
+            //Act
+            var _tas = new TableAssignmentService(_ctx);
+            //Assert
+            try
+            {
+                await _tas.CreateTableAssignmentAsync(testAssignment);
+                Assert.Fail("Should have thrown exception");
+            }
+            catch (Exception _ex)
+            {
+                Assert.AreEqual("No tables found", _ex.Message);
+            }
 
         }
 
