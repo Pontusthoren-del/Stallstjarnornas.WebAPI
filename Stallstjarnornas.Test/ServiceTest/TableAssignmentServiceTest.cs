@@ -167,8 +167,8 @@ namespace Stallstjarnornas.Test.ServiceTest
             });
 
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(  3, new List<int>() { 32 });
-           await _ctx.SaveChangesAsync();
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 32 });
+            await _ctx.SaveChangesAsync();
             //Act
 
             var _tas = new TableAssignmentService(_ctx);
@@ -178,7 +178,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 await _tas.CreateTableAssignmentAsync(testAssignment);
                 Assert.Fail("Should have thrown exception");
             }
-            catch(Exception _ex)
+            catch (Exception _ex)
             {
                 Assert.AreEqual("One or more tables where not found", _ex.Message);
             }
@@ -258,7 +258,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() {  });
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -293,7 +293,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1,1});
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1, 1 });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -310,10 +310,37 @@ namespace Stallstjarnornas.Test.ServiceTest
 
         }
 
+        [TestMethod]
+        public async Task CreateNewAssignment_WithTwoTableProvided_ShouldCreateTwoAssignments()
+        {
+            //Arrange
+            //Måste slänga in bokningen i databasen för att servicen ska kunna hitta den. 
+            //Hämtar guest från seed pga slippa skriva för mycket
+            var fakeBooking = _ctx.Add(new Booking
+            {
+                Id = 3,
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 6, 1),
+                NoOfGuests = 4,
+                Status = "Confirmed",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+            //Faketablesassigmnet dto
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1, 2 });
+            await _ctx.SaveChangesAsync();
+            //Act
+            var _tas = new TableAssignmentService(_ctx);
+            await _tas.CreateTableAssignmentAsync(testAssignment);
+
+            var noOfAssignmentsCreated = await _ctx.TableAssignments.Where(ta => ta.BookingId == 3).ToListAsync();
+            //Assert
+
+            Assert.AreEqual(2,noOfAssignmentsCreated.Count);
 
 
 
-
-
+        }
     }
 }
