@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -100,6 +101,11 @@ namespace Stallstjarnornas.Test.ServiceTest
             Assert.AreEqual(result.BookingId, expected.BookingId, "Correct input should yield correct response");
             CollectionAssert.AreEqual(result.TableIds, expected.TableIds, "Correct input should yield correct response");//collection assert för att det är listor
 
+            var pullTest = await _ctx.TableAssignments.FirstOrDefaultAsync(ta => ta.BookingId == 3);
+
+            Assert.AreEqual(1, pullTest.TableId);
+            Assert.AreEqual(3, pullTest.BookingId);
+            //Testar ifall det sparades till databasen
         }
 
         [TestMethod]
