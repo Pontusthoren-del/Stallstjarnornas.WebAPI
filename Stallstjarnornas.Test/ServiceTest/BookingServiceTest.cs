@@ -267,7 +267,7 @@ public class BookingServiceTest
         }
     }
     [TestMethod]
-    public async Task FilterBookings_ByDate_ShouldReturnCorrectBooking()
+    public async Task FilterBookings_ByDate_ShouldReturnCorrectBookings()
     {
         // Arrange
         // Bokning 1001 och 1002 på 2026-06-01 finns redan via TestDataHelper 
@@ -302,7 +302,7 @@ public class BookingServiceTest
         Assert.IsTrue(result.All(b => b.BookingDate == new DateOnly(2026, 6, 1)));
     }
     [TestMethod]
-    public async Task FilterBookings_ByStatus_ShouldReturnCorrectBooking()
+    public async Task FilterBookings_ByStatus_ShouldReturnCorrectBookings()
     {
         // Arrange
         // Bokning 1001 med Status "Confirmed" finns redan via TestDataHelper 
@@ -323,5 +323,130 @@ public class BookingServiceTest
         // Ska bara returnera bokning 1001 - inte 1002 som är Cancelled
         Assert.AreEqual(1, result.Count());
         Assert.IsTrue(result.All(b => b.Status == "Confirmed"));
+    }
+    [TestMethod]
+    public async Task FilterBookings_ByIsPlaced_ShouldReturnCorrectBookings()
+    {
+        // Arrange
+        // Bokning 1001 finns redan via TestDataHelper 
+        // Lägger till en TableAssignment för bokning 1001 → IsPlaced = true
+        _ctx.TableAssignments.Add(new TableAssignment
+        {
+            Id = 1,
+            BookingId = 1,
+            TableId = 1
+        });
+        await _ctx.SaveChangesAsync();
+
+        // Act - filtrera på isPlaced = true
+        var result = await _service.FilterBookingsAsync(
+            status: null,
+            date: null,
+            sittingId: null,
+            week: null,
+            month: null,
+            year: null,
+            isPlaced: true
+        );
+
+        // Assert
+        // Ska bara returnera bokning 1001 som har en TableAssignment
+        // Bokning 1002 har ingen TableAssignment → IsPlaced = false
+        Assert.AreEqual(1, result.Count());
+        Assert.IsTrue(result.All(b => b.IsPlaced == true));
+    }
+    [TestMethod]
+    public async Task FilterBookings_NoFilter_ShouldReturnAllBookings()
+    {
+        // Arrange
+        // Bokning 1001 och 1002 finns redan via TestDataHelper 
+
+        // Act - inga filter
+        var result = await _service.FilterBookingsAsync(
+            status: null,
+            date: null,
+            sittingId: null,
+            week: null,
+            month: null,
+            year: null,
+            isPlaced: null
+        );
+
+        // Assert
+        // Ska returnera alla bokningar - 1001 och 1002
+        Assert.AreEqual(2, result.Count());
+    }
+    [TestMethod]
+    public async Task FilterBookings_ByMonthAndYear_ShouldReturnCorrectBookings()
+    {
+        // Arrange
+        // Bokning 1001 och 1002 på juni 2026 finns redan via TestDataHelper 
+        // Lägger till en bokning på juli 2026 för att verifiera filtreringen
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 2,
+            SittingId = 2,
+            BookingDate = new DateTime(2026, 7, 1), // ← juli
+            NoOfGuests = 2,
+            Status = "Confirmed",
+            BookingNumber = 1003,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        // Act - filtrera på juni 2026
+        var result = await _service.FilterBookingsAsync(
+            status: null,
+            date: null,
+            sittingId: null,
+            week: null,
+            month: 6,
+            year: 2026,
+            isPlaced: null
+        );
+
+        // Assert
+        // Ska returnera bokning 1001 och 1002 - inte 1003 som är i juli
+        Assert.AreEqual(2, result.Count());
+        Assert.IsTrue(result.All(b => b.BookingDate.Month == 6 && b.BookingDate.Year == 2026));
+    }
+    [TestMethod]
+    public async Task FilterBookings_ByWeekAndYear_ShouldReturnCorrectBookings()
+    {
+        // Arrange
+        // Bokning 1001 och 1002 på 2026-06-01 finns redan via TestDataHelper 
+        // 2026-06-01 är vecka 23 år 2026
+        // Lägger till en bokning på en annan vecka för att verifiera filtreringen
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 2,
+            SittingId = 2,
+            BookingDate = new DateTime(2026, 6, 15), // ← vecka 25
+            NoOfGuests = 2,
+            Status = "Confirmed",
+            BookingNumber = 1003,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        // Act - filtrera på vecka 23 år 2026
+        var result = await _service.FilterBookingsAsync(
+            status: null,
+            date: null,
+            sittingId: null,
+            week: 23,
+            month: null,
+            year: 2026,
+            isPlaced: null
+        );
+
+        // Assert
+        // Ska returnera bokning 1001 och 1002 - inte 1003 som är vecka 25
+        Assert.AreEqual(2, result.Count());
+        Assert.IsTrue(result.All(b =>
+            System.Globalization.ISOWeek.GetWeekOfYear(
+                b.BookingDate.ToDateTime(TimeOnly.MinValue)) == 23));
     }
 }
