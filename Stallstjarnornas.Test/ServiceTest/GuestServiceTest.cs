@@ -184,6 +184,15 @@ namespace Stallstjarnornas.Test.ServiceTest
 
             Assert.IsNull(result);
         }
+
+        [TestMethod]
+        public async Task DeletGuestAsync_ShouldReturnFalse_WhenDeleteGuestThatDoesNotExist()
+        {
+            var result = await _service.DeleteGuestAsync(999);
+
+            Assert.IsFalse(result);
+        }
+
     }
 }
 
