@@ -245,13 +245,44 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: booking.IsPlaced
             );
         }
-        public Task<BookingResponseDto> UpdateBookingAsync(int id, UpdateBookingDto dto)
+        public async Task<BookingResponseDto> UpdateBookingAsync(int bookingNumber, UpdateBookingDto dto)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
+
+            if (booking == null)
+                throw new Exception("Bokningen hittades inte.");
+
+            // Validerar att status är ett giltigt värde
+            var allowedStatuses = new[] { "Confirmed", "Cancelled", "Pending" };
+            if (dto.Status != null && !allowedStatuses.Contains(dto.Status))
+            {
+                throw new Exception("Ogiltigt status. Tillåtna värden: Confirmed, Cancelled, Pending.");
+            }
+
+            // Uppdatera bara det som skickats in
+            booking.NoOfGuests = dto.NumberOfGuests ?? booking.NoOfGuests;
+            booking.SittingId = dto.SittingId ?? booking.SittingId;
+            booking.Status = dto.Status ?? booking.Status;
+            booking.Message = dto.Message ?? booking.Message;
+
+            if (dto.BookingDate.HasValue)
+                booking.BookingDate = dto.BookingDate.Value.ToDateTime(TimeOnly.MinValue);
+
+            await _ctx.SaveChangesAsync();
+
+            return await GetBookingByNumberAsync(bookingNumber);
         }
-        public Task DeleteBookingAsync(int id)
+        public async Task DeleteBookingAsync(int bookingNumber)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
+
+            if (booking == null)
+                throw new Exception("Bokningen hittades inte.");
+
+            _ctx.Bookings.Remove(booking);
+            await _ctx.SaveChangesAsync();
         }
     }
 }
