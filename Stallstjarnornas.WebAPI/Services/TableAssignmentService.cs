@@ -128,7 +128,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 availableTables);
         }
 
-        public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)
+        public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)  
         {
 
             var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
