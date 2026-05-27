@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stallstjarnornas.Library.Models;
@@ -448,5 +449,108 @@ public class BookingServiceTest
         Assert.IsTrue(result.All(b =>
             System.Globalization.ISOWeek.GetWeekOfYear(
                 b.BookingDate.ToDateTime(TimeOnly.MinValue)) == 23));
+    }
+    [TestMethod]
+    public async Task DeleteBooking_ShouldRemoveBooking()
+    {
+        // Arrange
+        // Bokning 1001 finns redan via TestDataHelper 
+
+        // Act
+        await _service.DeleteBookingAsync(1001);
+
+        // Assert
+        // Bokningen ska inte längre finnas i databasen
+        var deletedBooking = await _ctx.Bookings
+            .FirstOrDefaultAsync(b => b.BookingNumber == 1001);
+        Assert.IsNull(deletedBooking);
+    }
+
+    [TestMethod]
+    public async Task DeleteBooking_NotFound_ShouldThrowException()
+    {
+        // Arrange - bokning 9999 finns inte 
+
+        // Act + Assert
+        try
+        {
+            await _service.DeleteBookingAsync(9999);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Bokningen hittades inte.", ex.Message);
+        }
+    }
+    [TestMethod]
+    public async Task UpdateBooking_ShouldUpdateCorrectly()
+    {
+        // Arrange
+        // Bokning 1001 finns redan via TestDataHelper ✅
+
+        var dto = new UpdateBookingDto(
+            BookingDate: null,
+            NumberOfGuests: 4,
+            SittingId: null,
+            Status: "Confirmed",
+            Message: "Uppdaterat meddelande"
+        );
+
+        // Act
+        var result = await _service.UpdateBookingAsync(1001, dto);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(4, result.NumberOfGuests);
+        Assert.AreEqual("Confirmed", result.Status);
+        Assert.AreEqual("Uppdaterat meddelande", result.Message);
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_NotFound_ShouldThrowException()
+    {
+        // Arrange - bokning 9999 finns inte ✅
+        var dto = new UpdateBookingDto(
+            BookingDate: null,
+            NumberOfGuests: null,
+            SittingId: null,
+            Status: "Confirmed",
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.UpdateBookingAsync(9999, dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Bokningen hittades inte.", ex.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_InvalidStatus_ShouldThrowException()
+    {
+        // Arrange - ogiltigt status
+        var dto = new UpdateBookingDto(
+            BookingDate: null,
+            NumberOfGuests: null,
+            SittingId: null,
+            Status: "Felstavat",
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.UpdateBookingAsync(1001, dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Ogiltigt status. Tillåtna värden: Confirmed, Cancelled, Pending.", ex.Message);
+        }
     }
 }
