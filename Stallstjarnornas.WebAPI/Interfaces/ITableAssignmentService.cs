@@ -12,5 +12,7 @@ namespace Stallstjarnornas.WebAPI.Interfaces
     {
         Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto);
         Task <GetAvailableTablesResponseDto> GetAvailableTablesAsync(GetAvailableTablesDto dto);
+
+        Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto);
     }
 }

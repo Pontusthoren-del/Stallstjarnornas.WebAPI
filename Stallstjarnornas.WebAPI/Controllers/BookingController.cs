@@ -27,7 +27,7 @@ public class BookingController : ControllerBase
         }
     }
 
-    [HttpGet("{bookingNumber}")]
+    [HttpGet("BookingNumber/{bookingNumber}")]
     public async Task<ActionResult<BookingResponseDto>> GetBookingByNumber(int bookingNumber)
     {
         try
@@ -61,13 +61,39 @@ public class BookingController : ControllerBase
         }
     }
 
-    [HttpPatch("{bookingNumber}/cancel")]
+    [HttpPatch("Cancel/{bookingNumber}")]
     public async Task<ActionResult> CancelBooking(int bookingNumber)
     {
         try
         {
             await _service.CancelBookingAsync(bookingNumber);
             return Ok("Bokningen är avbokad.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpDelete("Delete/{bookingNumber}")]
+    public async Task<IActionResult> DeleteBooking(int bookingNumber)
+    {
+        try
+        {
+            await _service.DeleteBookingAsync(bookingNumber);
+            return Ok($"{bookingNumber} är bortagen!");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpPut("Update/{bookingNumber}")]
+    public async Task<IActionResult> UpdateBooking(int bookingNumber, UpdateBookingDto dto)
+    {
+        try
+        {
+            var result = await _service.UpdateBookingAsync(bookingNumber, dto);
+            return Ok(result);
         }
         catch (Exception ex)
         {
