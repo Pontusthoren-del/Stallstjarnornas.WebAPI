@@ -172,6 +172,14 @@ namespace Stallstjarnornas.Test.ServiceTest
         {
             var deleteGuest = await _service.DeleteGuestAsync(1);
 
+            Assert.IsTrue(deleteGuest);
+        }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnNull_WhenSearchingByGuestId()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
             var result = await _service.GetGuestByIdAsync(1);
 
             Assert.IsNull(result);
