@@ -143,8 +143,8 @@ namespace Stallstjarnornas.Test.ServiceTest
             var result = await _service.RegisterGuestAsync(dto);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Viktor Andersson", dto.Name);
-            Assert.AreEqual("Viktor@test.com", dto.Email);
+            Assert.AreEqual("Viktor Andersson", result.Name);
+            Assert.AreEqual("Viktor@test.com", result.Email);
 
             var guestInDb = await _ctx.Guests.FirstOrDefaultAsync(g => g.Email == "Viktor@test.com");
             Assert.IsNotNull(guestInDb);
@@ -164,6 +164,16 @@ namespace Stallstjarnornas.Test.ServiceTest
             var result = await _service.RegisterGuestAsync(dto);
 
             // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnNull_WhenGuestIsDeleted()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
+            var result = await _service.GetGuestByIdAsync(1);
+
             Assert.IsNull(result);
         }
     }

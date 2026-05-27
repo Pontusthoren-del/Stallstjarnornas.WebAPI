@@ -115,10 +115,6 @@ namespace Stallstjarnornas.WebAPI.Services
         }
 
 
-        public Task DeleteBookingAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
         string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced)
@@ -209,10 +205,6 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: b.IsPlaced
             ));
         }
-        public Task<IEnumerable<BookingResponseDto>> GetAllBookingsAsync()
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber)
         {
@@ -253,13 +245,11 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: booking.IsPlaced
             );
         }
-
-        public Task<BookingResponseDto> RebookBookingAsync(int bookingNumber, UpdateBookingDto dto)
+        public Task<BookingResponseDto> UpdateBookingAsync(int id, UpdateBookingDto dto)
         {
             throw new NotImplementedException();
         }
-
-        public Task<BookingResponseDto> UpdateBookingAsync(int id, UpdateBookingDto dto)
+        public Task DeleteBookingAsync(int id)
         {
             throw new NotImplementedException();
         }

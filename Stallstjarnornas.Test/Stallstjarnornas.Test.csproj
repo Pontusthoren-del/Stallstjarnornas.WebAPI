@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Stallstjarnornas.WebAPI\Stallstjarnornas.WebAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ValidationTest\" />
+  </ItemGroup>
+
 </Project>
