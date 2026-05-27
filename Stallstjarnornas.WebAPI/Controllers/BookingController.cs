@@ -74,4 +74,17 @@ public class BookingController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    [HttpDelete("{bookingNumber}")]
+    public async Task<IActionResult> DeleteBooking(int bookingNumber)
+    {
+        try
+        {
+            await _service.DeleteBookingAsync(bookingNumber);
+            return Ok("Bokningen är borttagen");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

@@ -249,9 +249,16 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             throw new NotImplementedException();
         }
-        public Task DeleteBookingAsync(int id)
+        public async Task DeleteBookingAsync(int bookingNumber)
         {
-            throw new NotImplementedException();
+            var booking = await _ctx.Bookings
+                .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
+
+            if (booking == null)
+                throw new Exception("Bokningen hittades inte.");
+
+            _ctx.Bookings.Remove(booking);
+            await _ctx.SaveChangesAsync();
         }
     }
 }
