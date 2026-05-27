@@ -29,14 +29,14 @@ namespace Stallstjarnornas.WebAPI.Services
         {
 
 
-            var booking = await _ctx.Bookings
+            var booking = await _ctx.Bookings.Include(b=>b.Guest)
             .FirstOrDefaultAsync(b => b.Id == dto.BookingId);
 
             if (booking == null)
             {
                 throw new Exception("Booking not found");
             }
-            if (booking.Status == "Cancelled" || booking.Status == "Pending")
+            if (booking.Status == "Cancelled" || booking.Status == "Confirmed")
             {
                 throw new Exception("Booking not valid");
             }//Skriv test för detta
