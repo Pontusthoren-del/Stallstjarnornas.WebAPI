@@ -52,7 +52,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
         public async Task<IActionResult> DeleteGuest(int id)
         {
             var deleted = await _service.DeleteGuestAsync(id);
-            if (!deleted) return NotFound();
+            if (!deleted) return NotFound("Id:t du sökte på finns inte.");
             return NoContent();
         }
     }
