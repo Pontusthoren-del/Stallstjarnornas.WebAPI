@@ -52,17 +52,12 @@ public class BookingControllerTests
         _serviceMock
             .Setup(x => x.GetBookingByNumberAsync(1))
             .ReturnsAsync(booking);
-
         // ACT
         // Kör controller-metoden.
-
         var result = await _controller.GetBookingByNumber(1);
-
         // ASSERT
         // Kontrollerar att resultatet blev HTTP 200 OK.
-
         var okResult = result.Result as OkObjectResult;
-
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
     }
@@ -75,7 +70,7 @@ public class BookingControllerTests
 
         _serviceMock
             .Setup(x => x.GetBookingByNumberAsync(1))
-            .ThrowsAsync(new Exception("Booking not found"));
+            .ThrowsAsync(new Exception("Bokningen fanns inte."));
 
         // ACT
         // Kör controller-metoden.
@@ -123,7 +118,7 @@ public class BookingControllerTests
 
         _serviceMock
             .Setup(x => x.DeleteBookingAsync(1))
-            .ThrowsAsync(new Exception("Booking not found"));
+            .ThrowsAsync(new Exception("Bokningen fanns inte."));
 
         // ACT
         // Kör delete-metoden.
@@ -137,5 +132,64 @@ public class BookingControllerTests
 
         Assert.IsNotNull(badRequest);
         Assert.AreEqual(400, badRequest.StatusCode);
+    }
+    [TestMethod]
+    public async Task CreateBooking_ShouldReturnOk_WhenSuccess()
+    {
+        // ARRANGE
+        // Skapar input-DTO som skickas till controllern (som om det kom från API-anrop)
+        var dto = new CreateBookingDto(
+            Name: "Anna",
+            Phone: "0701234567",
+            Email: "anna@test.se",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingId: 1,
+            Message: null
+        );
+
+        // Skapar ett förväntat svar från servicen (mockad data)
+        // Detta ersätter riktig service + databas i testet
+        var response = new BookingResponseDto(
+            BookingNumber: 1,
+            GuestName: "Anna",
+            GuestEmail: "anna@test.se",
+            GuestPhone: "0701234567",
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingStartTime: new TimeOnly(17, 0),
+            SittingEndTime: new TimeOnly(19, 0),
+            NumberOfGuests: 2,
+            Status: "Pending",
+            Message: null,
+            CreatedDate: DateTime.Now,
+            IsPlaced: false
+        );
+
+        // Säger till mockad service:
+        // "Om CreateBookingAsync anropas med denna DTO, returnera detta response"
+        _serviceMock
+            .Setup(x => x.CreateBookingAsync(dto))
+            .ReturnsAsync(response);
+
+        // ACT
+        // Anropar controller-metoden som testas
+        var result = await _controller.CreateBooking(dto);
+
+        // ASSERT
+        // Plockar ut HTTP 200 OK-resultatet från ActionResult
+        var okResult = result.Result as OkObjectResult;
+
+        // Säkerställer att vi faktiskt fick ett OK-svar
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        // Plockar ut själva datan som controllern returnerade
+        var value = okResult.Value as BookingResponseDto;
+
+        // Säkerställer att rätt typ returnerades
+        Assert.IsNotNull(value);
+
+        // Verifierar att innehållet är korrekt
+        Assert.AreEqual("Anna", value.GuestName);
     }
 }
