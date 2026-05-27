@@ -337,10 +337,46 @@ namespace Stallstjarnornas.Test.ServiceTest
             var noOfAssignmentsCreated = await _ctx.TableAssignments.Where(ta => ta.BookingId == 3).ToListAsync();
             //Assert
 
-            Assert.AreEqual(2,noOfAssignmentsCreated.Count);
+            Assert.AreEqual(2, noOfAssignmentsCreated.Count);
 
 
 
+        }
+
+        //Tests for getting available tables
+        [TestMethod]
+        public async Task GetAvailableTables_CorrectInput_ShouldReturn23Tables()
+        {
+            //Arrange
+            var fakeBooking = _ctx.Add(new Booking
+            {
+                
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 8, 1),
+                NoOfGuests = 4,
+                Status = "Confirmed",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+            //FakeTables
+            //for (int i = 1; i < 26; i++)
+            //{
+            //    _ctx.Tables.Add(new Stallstjarnornas.Library.Models.Table { });//måste skriva detta pga av att EF har nått inbyggt som också heter table??
+            //}
+
+
+            //Faketablesassigmnet dto
+            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() {1, 2 });
+            var fakeGetAvailableTablesDTO = new GetAvailableTablesDto(new DateOnly(2026, 8, 1), 1);
+            await _ctx.SaveChangesAsync();
+
+            var tableIds = _ctx.Tables.Take(2).Select(t => t.Id).ToList();
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+
+            await _tas.CreateTableAssignmentAsync(testAssignment);
+            var result = await _tas.GetAvailableTablesAsync(fakeGetAvailableTablesDTO);
+            Assert.AreEqual(23, result.TableIds.Count());
         }
     }
 }

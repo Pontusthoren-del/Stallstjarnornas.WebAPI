@@ -1,4 +1,5 @@
-﻿using Stallstjarnornas.Library.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Stallstjarnornas.Library.Models;
 using Stallstjarnornas.WebAPI.Data;
 
 namespace Stallstjarnornas.Test.TestHelpers;
@@ -13,8 +14,12 @@ public static class TestDataHelper
         ctx.Sittings.Add(new Sitting { Id = 1, OperatingDayId = 1, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(19, 0), MaxGuests = 50 });
         ctx.Sittings.Add(new Sitting { Id = 2, OperatingDayId = 1, StartTime = new TimeOnly(19, 0), EndTime = new TimeOnly(21, 0), MaxGuests = 50 });
 
-        ctx.Tables.Add(new Table { Id = 1, Seats = 2 });
-        ctx.Tables.Add(new Table { Id = 2, Seats = 2 });
+        //ctx.Tables.Add(new Table { Id = 1, Seats = 2 });
+        //ctx.Tables.Add(new Table { Id = 2, Seats = 2 });
+
+        ctx.Tables.AddRange(
+              Enumerable.Range(1, 25).Select(i => new Table { Id = i, Seats = 2 }).ToArray()
+               );
 
         // Confirmed bokning - används av CancelBooking och GetBookingByNumber
         ctx.Bookings.Add(new Booking
