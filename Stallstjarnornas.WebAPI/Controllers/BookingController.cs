@@ -80,7 +80,7 @@ public class BookingController : ControllerBase
         try
         {
             await _service.DeleteBookingAsync(bookingNumber);
-            return Ok("Bokningen är borttagen");
+            return Ok($"{bookingNumber} är bortagen!");
         }
         catch (Exception ex)
         {
