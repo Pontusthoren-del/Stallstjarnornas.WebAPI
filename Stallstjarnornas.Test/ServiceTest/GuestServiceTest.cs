@@ -168,7 +168,7 @@ namespace Stallstjarnornas.Test.ServiceTest
         }
 
         [TestMethod]
-        public async Task DeleteGuestAsync_ShouldReturnNull_WhenGuestIsDeleted()
+        public async Task DeleteGuestAsync_ShouldReturnTrue_WhenGuestIsDeleted()
         {
             var deleteGuest = await _service.DeleteGuestAsync(1);
 
