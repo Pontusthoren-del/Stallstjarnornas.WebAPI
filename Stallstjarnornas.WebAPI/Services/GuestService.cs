@@ -25,8 +25,14 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<bool> DeleteGuestAsync(int id)
         {
-            var guest = await _context.Guests.FindAsync(id);
+            var guest = await _context.Guests.Include(g => g.Bookings).SingleOrDefaultAsync(g => g.Id == id);
             if (guest == null) return false;
+
+            foreach(var booking in guest.Bookings)
+            {
+                booking.Status = "Cancelled";
+                booking.GuestId = null;
+            }
 
             _context.Guests.Remove(guest);
             await _context.SaveChangesAsync();
