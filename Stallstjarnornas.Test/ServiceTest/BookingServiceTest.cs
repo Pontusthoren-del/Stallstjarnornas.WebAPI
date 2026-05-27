@@ -266,4 +266,62 @@ public class BookingServiceTest
             Assert.AreEqual("Sittningen finns inte.", ex.Message);
         }
     }
+    [TestMethod]
+    public async Task FilterBookings_ByDate_ShouldReturnCorrectBooking()
+    {
+        // Arrange
+        // Bokning 1001 och 1002 på 2026-06-01 finns redan via TestDataHelper 
+        // Lägger till en bokning på ett annat datum för att verifiera filtreringen
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 2,
+            SittingId = 2,
+            BookingDate = new DateTime(2026, 7, 1),
+            NoOfGuests = 2,
+            Status = "Confirmed",
+            BookingNumber = 1003,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        //Act - filtrerar på 2026-06-01
+        var result = await _service.FilterBookingsAsync(
+            status: null,
+            date: new DateOnly(2026, 6, 1),
+            sittingId: null,
+            week: null,
+            month: null,
+            year: null,
+            isPlaced: null
+        );
+
+        //Assert
+        //Ska retunera bokning 1001 och 1002 - inte 1003 som är bokat 2026-07-01
+        Assert.AreEqual(2, result.Count());
+        Assert.IsTrue(result.All(b => b.BookingDate == new DateOnly(2026, 6, 1)));
+    }
+    [TestMethod]
+    public async Task FilterBookings_ByStatus_ShouldReturnCorrectBooking()
+    {
+        // Arrange
+        // Bokning 1001 med Status "Confirmed" finns redan via TestDataHelper 
+        // Bokning 1002 med Status "Cancelled" finns redan via TestDataHelper 
+
+        // Act - filtrera på Confirmed
+        var result = await _service.FilterBookingsAsync(
+            status: "Confirmed",
+            date: null,
+            sittingId: null,
+            week: null,
+            month: null,
+            year: null,
+            isPlaced: null
+        );
+
+        // Assert
+        // Ska bara returnera bokning 1001 - inte 1002 som är Cancelled
+        Assert.AreEqual(1, result.Count());
+        Assert.IsTrue(result.All(b => b.Status == "Confirmed"));
+    }
 }
