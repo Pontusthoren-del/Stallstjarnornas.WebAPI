@@ -193,6 +193,18 @@ namespace Stallstjarnornas.Test.ServiceTest
             Assert.IsFalse(result);
         }
 
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnCancelled_WhenDeleteGuestThatHadBookings()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
+            var bookings = await _ctx.Bookings.Where(b => b.Id == 1 || b.Id == 2).ToListAsync();
+
+            foreach(var booking in bookings)
+            {
+                Assert.AreEqual("Cancelled", booking.Status);
+            }
+        }
     }
 }
 
