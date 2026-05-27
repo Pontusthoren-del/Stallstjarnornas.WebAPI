@@ -27,7 +27,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<TableAssignmentResponseDto> CreateTableAssignmentAsync(CreateTableAssignmentDto dto)
         {
-           
+
 
             var booking = await _ctx.Bookings.Where(b => b.Id == dto.BookingId).Select(b => new
             {
@@ -62,12 +62,12 @@ namespace Stallstjarnornas.WebAPI.Services
             //logik för att se om alla platser är bokade ligger i booking och hanteras inte här. 
 
             var tablesToAssign = _ctx.Tables.Where(t => dto.TableIds.Contains(t.Id)).ToList();//Hämta alla bord som admin har lagt in i sitt anrop för att se att dom existerar
-            
+
             if (dto.TableIds.Distinct().Count() != dto.TableIds.Count())//om bord ej är unika
             {
                 throw new Exception("You assigned one or more tables more than once");
             }
-            if (tablesToAssign.Count !=dto.TableIds.Count)
+            if (tablesToAssign.Count != dto.TableIds.Count)
             {
                 throw new Exception("One or more tables where not found");
             }
@@ -88,7 +88,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 {
                     throw new Exception("You need to assign more tables");
                 }
-             
+
             }
 
             var response = new TableAssignmentResponseDto(
@@ -134,7 +134,22 @@ namespace Stallstjarnornas.WebAPI.Services
                 dto.sittingid,
                 availableTables);
         }
-     
+
+        public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)
+        {
+
+            var activeTableassignments = await _ctx.TableAssignments.Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
+
+            foreach (var assignment in activeTableassignments)
+            {
+                _ctx.TableAssignments.Remove(assignment);
+
+            }
+            
+            await _ctx.SaveChangesAsync();
+            
+        }
+
 
 
     }
