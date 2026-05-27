@@ -193,7 +193,7 @@ public class BookingControllerTests
         Assert.AreEqual("Anna", value.GuestName);
     }
     [TestMethod]
-    public async Task CreateBooking_ShouldReturnBadRequest_WhenExepctionThrown()
+    public async Task CreateBooking_ShouldReturnBadRequest_WhenExceptionThrown()
     {
         // ARRANGE
         var dto = new CreateBookingDto(
@@ -205,17 +205,19 @@ public class BookingControllerTests
             SittingId: 1,
             Message: null
         );
-        //Simulerar att service kastar ett fel
-            _serviceMock
-            .Setup(x=> x.CreateBookingAsync(dto))
-            .ThrowsAsync(new Exception("Sittningen är full"));
-        //ACT
-        var result = await _controller.CreateBooking(dto);
-        //Assert
-        var badRequest = result.Result as BadRequestObjectResult;
-        Assert.IsNull(badRequest);
-        Assert.AreEqual(400, badRequest.StatusCode);
 
+        _serviceMock
+            .Setup(x => x.CreateBookingAsync(It.IsAny<CreateBookingDto>()))
+            .ThrowsAsync(new Exception("Sittningen är full"));
+
+        // ACT
+        var result = await _controller.CreateBooking(dto);
+
+        // ASSERT
+        var badRequest = result.Result as BadRequestObjectResult;
+
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
         Assert.AreEqual("Sittningen är full", badRequest.Value);
     }
 }
