@@ -279,7 +279,9 @@ namespace Stallstjarnornas.WebAPI.Services
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
 
             if (booking == null)
+            {
                 throw new Exception("Bokningen hittades inte.");
+            }
 
             _ctx.Bookings.Remove(booking);
             await _ctx.SaveChangesAsync();
