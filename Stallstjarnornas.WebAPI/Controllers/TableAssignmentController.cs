@@ -33,7 +33,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
         }
 
         [HttpDelete("Delete-Table-Assignments")]
-        public async Task<ActionResult> DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)
+        public async Task<ActionResult> DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto) 
         {
              await _tass.DeleteAssignedTablesAsync(dto);
              return Ok("Table assignment was successfully deleted");

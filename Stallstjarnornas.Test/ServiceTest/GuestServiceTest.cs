@@ -168,13 +168,62 @@ namespace Stallstjarnornas.Test.ServiceTest
         }
 
         [TestMethod]
-        public async Task DeleteGuestAsync_ShouldReturnNull_WhenGuestIsDeleted()
+        public async Task DeleteGuestAsync_ShouldReturnTrue_WhenGuestIsDeleted()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
+            Assert.IsTrue(deleteGuest);
+        }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnNull_WhenSearchingByGuestId()
         {
             var deleteGuest = await _service.DeleteGuestAsync(1);
 
             var result = await _service.GetGuestByIdAsync(1);
 
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task DeletGuestAsync_ShouldReturnFalse_WhenDeleteGuestThatDoesNotExist()
+        {
+            var result = await _service.DeleteGuestAsync(999);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnCancelled_WhenDeleteGuestThatHadBookings()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
+            var bookings = await _ctx.Bookings.Where(b => b.Id == 1 || b.Id == 2).ToListAsync();
+
+            foreach(var booking in bookings)
+            {
+                Assert.AreEqual("Cancelled", booking.Status);
+            }
+        }
+        [TestMethod]
+        public async Task DeleteGuestAsync_GuestIdShouldReturnNull_WhenDeleteGuestThatHadBookings()
+        {
+            var deleteGuest = await _service.DeleteGuestAsync(1);
+
+            var bookings = await _ctx.Bookings.Where(b => b.Id == 1 || b.Id == 2).ToListAsync();
+
+            foreach(var booking in bookings)
+            {
+                Assert.IsNull(booking.GuestId);
+            }
+        }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnTrue_WhenDeleteGuestThatHasNoBookings()
+        {
+            var result = await _service.DeleteGuestAsync(2);
+
+            Assert.IsTrue(result);
         }
     }
 }

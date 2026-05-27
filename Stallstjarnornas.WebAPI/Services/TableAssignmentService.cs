@@ -29,16 +29,8 @@ namespace Stallstjarnornas.WebAPI.Services
         {
 
 
-            var booking = await _ctx.Bookings.Where(b => b.Id == dto.BookingId).Select(b => new
-            {
-                b.Id,
-                b.BookingDate,
-                b.Guest.Name,
-                b.NoOfGuests,
-                b.SittingId,
-                b.Status
-            }
-             ).FirstOrDefaultAsync();
+            var booking = await _ctx.Bookings
+            .FirstOrDefaultAsync(b => b.Id == dto.BookingId);
 
             if (booking == null)
             {
@@ -94,7 +86,7 @@ namespace Stallstjarnornas.WebAPI.Services
             var response = new TableAssignmentResponseDto(
                   dto.TableIds,
                     booking.Id,
-                    booking.Name,
+                    booking.Guest.Name,
                     booking.NoOfGuests,
                     DateOnly.FromDateTime(booking.BookingDate),
                     booking.SittingId
@@ -110,7 +102,8 @@ namespace Stallstjarnornas.WebAPI.Services
 
                 _ctx.TableAssignments.Add(assignment);
             }
-
+            booking.Status = "Confirmed";
+            
             await _ctx.SaveChangesAsync();
 
             return response;
@@ -135,15 +128,15 @@ namespace Stallstjarnornas.WebAPI.Services
                 availableTables);
         }
 
-        public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)
+        public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)  
         {
 
-            var activeTableassignments = await _ctx.TableAssignments.Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
+            var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
 
             foreach (var assignment in activeTableassignments)
             {
                 _ctx.TableAssignments.Remove(assignment);
-
+                assignment.Booking.Status = "Pending";
             }
             
             await _ctx.SaveChangesAsync();
