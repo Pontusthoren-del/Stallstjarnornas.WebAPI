@@ -36,6 +36,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 b.Guest.Name,
                 b.NoOfGuests,
                 b.SittingId,
+                b.Status
             }
              ).FirstOrDefaultAsync();
 
@@ -43,6 +44,10 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 throw new Exception("Booking not found");
             }
+            if (booking.Status == "Cancelled" || booking.Status == "Pending")
+            {
+                throw new Exception("Booking not valid");
+            }//Skriv test för detta
 
             var noOfGuests = booking.NoOfGuests;
             int tablesNeeded;
