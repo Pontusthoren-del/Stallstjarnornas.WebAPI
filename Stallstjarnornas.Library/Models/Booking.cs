@@ -10,7 +10,7 @@ namespace Stallstjarnornas.Library.Models
     {
         public int Id { get; set; }
 
-        public int GuestId { get; set; }
+        public int? GuestId { get; set; }
 
         public int SittingId { get; set; }
 
@@ -24,7 +24,7 @@ namespace Stallstjarnornas.Library.Models
 
         public DateTime CreatedDate { get; set; }
 
-        public Guest Guest { get; set; }
+        public Guest? Guest { get; set; }
         public Sitting Sitting { get; set; }
 
         public string? Message { get; set; }
