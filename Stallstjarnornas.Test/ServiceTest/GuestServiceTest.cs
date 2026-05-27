@@ -217,6 +217,14 @@ namespace Stallstjarnornas.Test.ServiceTest
                 Assert.IsNull(booking.GuestId);
             }
         }
+
+        [TestMethod]
+        public async Task DeleteGuestAsync_ShouldReturnTrue_WhenDeleteGuestThatHasNoBookings()
+        {
+            var result = await _service.DeleteGuestAsync(2);
+
+            Assert.IsTrue(result);
+        }
     }
 }
 
