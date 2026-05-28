@@ -196,6 +196,8 @@ public class BookingControllerTests
     public async Task CreateBooking_ShouldReturnBadRequest_WhenExceptionThrown()
     {
         // ARRANGE
+        // Skapar en DTO med giltig input - spelar ingen roll här
+        // eftersom servicen kastas exception oavsett vad vi skickar in
         var dto = new CreateBookingDto(
             Name: "Anna",
             Phone: "0701234567",
@@ -206,6 +208,8 @@ public class BookingControllerTests
             Message: null
         );
 
+        // Bestämmer att servicen ska kasta exception oavsett vilken DTO som skickas in
+        // It.IsAny<> används för att matcha alla möjliga DTOs
         _serviceMock
             .Setup(x => x.CreateBookingAsync(It.IsAny<CreateBookingDto>()))
             .ThrowsAsync(new Exception("Sittningen är full"));
@@ -214,10 +218,201 @@ public class BookingControllerTests
         var result = await _controller.CreateBooking(dto);
 
         // ASSERT
+        // Kontrollerar att controllern fångar exception och returnerar 400 BadRequest
         var badRequest = result.Result as BadRequestObjectResult;
-
         Assert.IsNotNull(badRequest);
         Assert.AreEqual(400, badRequest.StatusCode);
+        // Verifierar även att felmeddelandet från exception skickas tillbaka i svaret
         Assert.AreEqual("Sittningen är full", badRequest.Value);
+    }
+
+    [TestMethod]
+    public async Task CancelBooking_ShouldReturnOk_WhenSuccess()
+    {
+        // ARRANGE
+        // Bestämmer att avbokning ska lyckas utan exception
+        _serviceMock
+            .Setup(x => x.CancelBookingAsync(1))
+            .Returns(Task.CompletedTask);
+
+        // ACT
+        var result = await _controller.CancelBooking(1);
+
+        // ASSERT
+        // Kontrollerar att resultatet blev 200 OK
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task CancelBooking_ShouldReturnBadRequest_WhenExceptionThrown()
+    {
+        // ARRANGE
+        // Bestämmer att servicen ska kasta exception
+        // t.ex. om bokningen inte finns eller redan är avbokad
+        _serviceMock
+            .Setup(x => x.CancelBookingAsync(1))
+            .ThrowsAsync(new Exception("Bokningen finns inte."));
+
+        // ACT
+        var result = await _controller.CancelBooking(1);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar exception och returnerar 400 BadRequest
+        var badRequest = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldReturnOk_WhenSuccess()
+    {
+        // ARRANGE
+        // Skapar en DTO med de fält vi vill uppdatera
+        // null-fält betyder att de inte ska ändras
+        var dto = new UpdateBookingDto(
+            BookingDate: null,
+            NumberOfGuests: 4,
+            SittingId: null,
+            Status: "Confirmed",
+            Message: "Uppdaterat meddelande"
+        );
+
+        // Skapar det förväntade svaret från servicen med uppdaterade värden
+        var response = new BookingResponseDto(
+            BookingNumber: 1001,
+            GuestName: "Anna Lindqvist",
+            GuestEmail: "anna@test.com",
+            GuestPhone: "070-123 45 67",
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingStartTime: new TimeOnly(17, 0),
+            SittingEndTime: new TimeOnly(19, 0),
+            NumberOfGuests: 4,
+            Status: "Confirmed",
+            Message: "Uppdaterat meddelande",
+            CreatedDate: DateTime.Now,
+            IsPlaced: false
+        );
+
+        // Bestämmer vad mock-servicen ska returnera
+        // när UpdateBookingAsync anropas med bokningsnummer 1001 och vår DTO
+        _serviceMock
+            .Setup(x => x.UpdateBookingAsync(1001, dto))
+            .ReturnsAsync(response);
+
+        // ACT
+        var result = await _controller.UpdateBooking(1001, dto);
+
+        // ASSERT
+        // Kontrollerar att resultatet blev 200 OK
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldReturnBadRequest_WhenExceptionThrown()
+    {
+        // ARRANGE
+        // Skapar en DTO med ett ogiltigt status för att trigga exception i servicen
+        var dto = new UpdateBookingDto(
+            BookingDate: null,
+            NumberOfGuests: null,
+            SittingId: null,
+            Status: "Felstavat",
+            Message: null
+        );
+
+        // It.IsAny<> används för att matcha alla bokningsnummer och DTOs
+        // eftersom vi bara vill testa att controllern hanterar exception korrekt
+        _serviceMock
+            .Setup(x => x.UpdateBookingAsync(It.IsAny<int>(), It.IsAny<UpdateBookingDto>()))
+            .ThrowsAsync(new Exception("Ogiltigt status."));
+
+        // ACT
+        var result = await _controller.UpdateBooking(1001, dto);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar exception och returnerar 400 BadRequest
+        var badRequest = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task FilterBookings_ShouldReturnOk_WhenSuccess()
+    {
+        // ARRANGE
+        // Skapar en lista med ett fake bokningsobjekt som servicen ska returnera
+        var bookings = new List<BookingResponseDto>
+    {
+        new BookingResponseDto(
+            BookingNumber: 1001,
+            GuestName: "Anna Lindqvist",
+            GuestEmail: "anna@test.com",
+            GuestPhone: "070-123 45 67",
+            BookingDate: new DateOnly(2026, 6, 1),
+            SittingStartTime: new TimeOnly(17, 0),
+            SittingEndTime: new TimeOnly(19, 0),
+            NumberOfGuests: 2,
+            Status: "Confirmed",
+            Message: null,
+            CreatedDate: DateTime.Now,
+            IsPlaced: false
+        )
+    };
+
+        // Bestämmer att servicen returnerar vår lista när status = "Confirmed"
+        // och alla andra filter är null
+        _serviceMock
+            .Setup(x => x.FilterBookingsAsync("Confirmed", null, null, null, null, null, null))
+            .ReturnsAsync(bookings);
+
+        // ACT
+        // Anropar controller-metoden med status-filter
+        var result = await _controller.FilterBookings(
+            status: "Confirmed",
+            date: null,
+            sittingId: null,
+            week: null,
+            month: null,
+            year: null,
+            isPlaced: null
+        );
+
+        // ASSERT
+        // Kontrollerar att resultatet blev 200 OK
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task FilterBookings_ShouldReturnBadRequest_WhenExceptionThrown()
+    {
+        // ARRANGE
+        // It.IsAny<> används för alla parametrar eftersom vi bara vill
+        // testa att controllern hanterar exception oavsett vilka filter som skickas in
+        _serviceMock
+            .Setup(x => x.FilterBookingsAsync(
+                It.IsAny<string?>(),
+                It.IsAny<DateOnly?>(),
+                It.IsAny<int?>(),
+                It.IsAny<int?>(),
+                It.IsAny<int?>(),
+                It.IsAny<int?>(),
+                It.IsAny<bool?>()))
+            .ThrowsAsync(new Exception("Något gick fel."));
+
+        // ACT
+        // Anropar med alla null - filtren spelar ingen roll här
+        var result = await _controller.FilterBookings(null, null, null, null, null, null, null);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar exception och returnerar 400 BadRequest
+        var badRequest = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
     }
 }
