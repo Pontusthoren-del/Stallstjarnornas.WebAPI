@@ -31,7 +31,7 @@ public class GuestControllerTest
     public async Task GetGuestById_ShouldReturnOk_WhenSearchingExistingGuest()
     {
         //Arrange
-        var guest = CreateTestGuest(1,"test@test.se");
+        var guest = CreateTestGuest(1, "test@test.se");
 
         _serviceMock
             .Setup(ig => ig.GetGuestByIdAsync(1))
@@ -66,9 +66,9 @@ public class GuestControllerTest
     public async Task GetAllGuests_ShouldReturnOk_WhenAListOfGuestExists()
     {
         //Arrange
-        var guest1 = CreateTestGuest(1,"test1@test.se");
-        var guest2 = CreateTestGuest(2,"test2@test.se");
-        var guest3 = CreateTestGuest(3,"test3@test.se");
+        var guest1 = CreateTestGuest(1, "test1@test.se");
+        var guest2 = CreateTestGuest(2, "test2@test.se");
+        var guest3 = CreateTestGuest(3, "test3@test.se");
 
         var guests = new List<GuestDto> { guest1, guest2, guest3 };
         _serviceMock
@@ -84,4 +84,27 @@ public class GuestControllerTest
         Assert.AreEqual(200, okResult.StatusCode);
     }
 
+
+    [TestMethod]
+    public async Task GetAllGuests_ShouldReturnOk_WhenListIsEmpty()
+    {
+        //Arrange
+
+
+        var guests = new List<GuestDto> { };
+        _serviceMock
+            .Setup(ig => ig.GetAllGuestsAsync())
+            .ReturnsAsync(guests);
+        //Act
+        var result = await _controller.GetAllGuests();
+
+        //Assert
+        var okResult = result.Result as OkObjectResult;
+
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
 }
+
+
+
