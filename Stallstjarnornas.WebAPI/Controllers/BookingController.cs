@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stallstjarnornas.WebAPI.DTOs.Booking;
+using Stallstjarnornas.WebAPI.Exceptions;
 using Stallstjarnornas.WebAPI.Interfaces;
 
 [ApiController]
@@ -21,6 +22,14 @@ public class BookingController : ControllerBase
             var result = await _service.CreateBookingAsync(dto);
             return Ok(result);
         }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
@@ -35,20 +44,25 @@ public class BookingController : ControllerBase
             var result = await _service.GetBookingByNumberAsync(bookingNumber);
             return Ok(result);
         }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
+
     [HttpGet("Filter-Booking")]
     public async Task<ActionResult<IEnumerable<BookingResponseDto>>> FilterBookings(
-    [FromQuery] string? status,
-    [FromQuery] DateOnly? date,
-    [FromQuery] int? sittingId,
-    [FromQuery] int? week,
-    [FromQuery] int? month,
-    [FromQuery] int? year,
-    [FromQuery] bool? isPlaced)
+        [FromQuery] string? status,
+        [FromQuery] DateOnly? date,
+        [FromQuery] int? sittingId,
+        [FromQuery] int? week,
+        [FromQuery] int? month,
+        [FromQuery] int? year,
+        [FromQuery] bool? isPlaced)
     {
         try
         {
@@ -69,11 +83,20 @@ public class BookingController : ControllerBase
             await _service.CancelBookingAsync(bookingNumber);
             return Ok("Bokningen är avbokad.");
         }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(ex.Message);
+        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
+
     [HttpDelete("Delete/{bookingNumber}")]
     public async Task<IActionResult> DeleteBooking(int bookingNumber)
     {
@@ -82,11 +105,16 @@ public class BookingController : ControllerBase
             await _service.DeleteBookingAsync(bookingNumber);
             return Ok($"{bookingNumber} är bortagen!");
         }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
     }
+
     [HttpPut("Update/{bookingNumber}")]
     public async Task<IActionResult> UpdateBooking(int bookingNumber, UpdateBookingDto dto)
     {
@@ -94,6 +122,14 @@ public class BookingController : ControllerBase
         {
             var result = await _service.UpdateBookingAsync(bookingNumber, dto);
             return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

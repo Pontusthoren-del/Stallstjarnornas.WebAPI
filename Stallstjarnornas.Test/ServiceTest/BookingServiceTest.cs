@@ -42,7 +42,9 @@ public class BookingServiceTest
         await _service.CancelBookingAsync(1001);
 
         // Assert
-        var updatedBooking = await _ctx.Bookings.FindAsync(1);
+        var updatedBooking = await _ctx.Bookings
+            .FirstOrDefaultAsync(b=>b.BookingNumber==1001);
+        Assert.IsNotNull(updatedBooking);
         Assert.AreEqual("Cancelled", updatedBooking.Status);
     }
 
