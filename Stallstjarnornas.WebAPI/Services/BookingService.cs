@@ -3,47 +3,37 @@ using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Booking;
 using Stallstjarnornas.WebAPI.Interfaces;
 using Stallstjarnornas.Library.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Stallstjarnornas.WebAPI.Exceptions;
 
 namespace Stallstjarnornas.WebAPI.Services
 {
     public class BookingService : IBookingService
     {
-
         private readonly StallstjarnornasDbContext _ctx;
         private readonly IGuestService _guestService;
-
         public BookingService(StallstjarnornasDbContext ctx, IGuestService guestService)
         {
             _ctx = ctx;
             _guestService = guestService;
         }
-
         public async Task CancelBookingAsync(int bookingNumber)
         {
             var booking = await _ctx.Bookings
-                .FirstOrDefaultAsync(b=>b.BookingNumber == bookingNumber);
+                .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
             if (booking == null)
             {
-                throw new Exception("Bokning hittades inte.");
+                throw new NotFoundException("Bokning hittades inte.");
             }
-            if (booking.Status == "Cancelled")  
+            if (booking.Status == "Cancelled")
             {
-                throw new Exception("Bokningen är redan avbokad.");
+                throw new ConflictException("Bokningen är redan avbokad.");
             }
-
             booking.Status = "Cancelled";
             await _ctx.SaveChangesAsync();
         }
-
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
         {
             var guest = await _guestService.GetGuestEntityByEmailAsync(dto.Email);
-
             if (guest == null)
             {
                 guest = new Guest
@@ -54,7 +44,6 @@ namespace Stallstjarnornas.WebAPI.Services
                 };
                 _ctx.Guests.Add(guest);
             }
-            //Ser till att jag hämtar bara det jag behöver från Sitting
             var sittingInfo = await _ctx.Sittings
                 .Where(s => s.Id == dto.SittingId)
                 .Select(s => new
@@ -64,26 +53,22 @@ namespace Stallstjarnornas.WebAPI.Services
                     s.EndTime,
                     s.MaxGuests,
                     BookedGuests = s.Bookings
-                    .Where(b => b.BookingDate == dto.BookingDate.ToDateTime(TimeOnly.MinValue)
-                    && b.Status != "Cancelled")
-                    .Sum(b => b.NoOfGuests)
+                        .Where(b => b.BookingDate == dto.BookingDate.ToDateTime(TimeOnly.MinValue)
+                        && b.Status != "Cancelled")
+                        .Sum(b => b.NoOfGuests)
                 })
-                .FirstOrDefaultAsync(); 
-
-            //Här ser jag först så sittningen finns, och sen om sittningen är full.
+                .FirstOrDefaultAsync();
             if (sittingInfo == null)
             {
-                throw new Exception("Sittningen finns inte.");
+                throw new NotFoundException("Sittningen finns inte.");
             }
             if (sittingInfo.BookedGuests + dto.NumberOfGuests > sittingInfo.MaxGuests)
             {
-                throw new Exception("Sittningen är fullbokad.");
+                throw new ValidationException("Sittningen är fullbokad.");
             }
-
-            //Bookingtabellen -> hittar högsta bokningsnumret ->om tabellen är TOM(null) - börja på 1000.
             var maxBookingNumber = await _ctx.Bookings
                 .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;
-            //Här skapas bokningen
+
             var booking = new Booking
             {
                 Guest = guest,
@@ -97,7 +82,6 @@ namespace Stallstjarnornas.WebAPI.Services
             };
             _ctx.Bookings.Add(booking);
             await _ctx.SaveChangesAsync();
-            //Här retuneras bokningen med rätt info
             return new BookingResponseDto(
                 BookingNumber: booking.BookingNumber,
                 GuestName: guest.Name,
@@ -113,20 +97,14 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: false
             );
         }
-
-
-
         public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
-        string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced)
+            string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced)
         {
-            //här hämtar vi alla bokningar som en "query" - men inget skickas till databasen än
             var query = _ctx.Bookings.AsQueryable();
 
-            // Dessa körs i SQL
             if (date.HasValue)
             {
-                query = query.Where(b =>
-                    b.BookingDate == date.Value.ToDateTime(TimeOnly.MinValue));
+                query = query.Where(b => b.BookingDate == date.Value.ToDateTime(TimeOnly.MinValue));
             }
             if (sittingId.HasValue)
             {
@@ -136,19 +114,14 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 query = query.Where(b => b.Status == status);
             }
-            // Månad + år körs i SQL
             if (month.HasValue && year.HasValue)
             {
-                query = query.Where(b =>
-                    b.BookingDate.Month == month.Value &&
-                    b.BookingDate.Year == year.Value);
+                query = query.Where(b => b.BookingDate.Month == month.Value && b.BookingDate.Year == year.Value);
             }
-            // Bara år utan vecka körs i SQL
             else if (year.HasValue && !week.HasValue)
             {
                 query = query.Where(b => b.BookingDate.Year == year.Value);
             }
-            // HÄR skickas allt till databasen i ett enda anrop!
             var result = await query
                 .Select(b => new
                 {
@@ -166,8 +139,6 @@ namespace Stallstjarnornas.WebAPI.Services
                     IsPlaced = b.TableAssignments.Any()
                 })
                 .ToListAsync();
-
-            // Vecka filtreras i minnet med ISOWeek - för den kan inte köras i SQL
             if (week.HasValue && year.HasValue)
             {
                 result = result.Where(b =>
@@ -177,7 +148,6 @@ namespace Stallstjarnornas.WebAPI.Services
                         b.BookingDate.ToDateTime(TimeOnly.MinValue)) == year.Value)
                     .ToList();
             }
-
             else if (week.HasValue)
             {
                 result = result.Where(b =>
@@ -189,7 +159,6 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 result = result.Where(b => b.IsPlaced == isPlaced.Value).ToList();
             }
-
             return result.Select(b => new BookingResponseDto(
                 BookingNumber: b.BookingNumber,
                 GuestName: b.GuestName,
@@ -205,7 +174,6 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: b.IsPlaced
             ));
         }
-
         public async Task<BookingResponseDto> GetBookingByNumberAsync(int bookingNumber)
         {
             var booking = await _ctx.Bookings
@@ -226,10 +194,10 @@ namespace Stallstjarnornas.WebAPI.Services
                     IsPlaced = b.TableAssignments.Any()
                 })
                 .FirstOrDefaultAsync();
-
             if (booking == null)
-                throw new Exception("Bokningen hittades inte");
-
+            {
+                throw new NotFoundException("Bokningen hittades inte.");
+            }
             return new BookingResponseDto(
                 BookingNumber: booking.BookingNumber,
                 GuestName: booking.GuestName,
@@ -249,40 +217,35 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             var booking = await _ctx.Bookings
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
-
             if (booking == null)
-                throw new Exception("Bokningen hittades inte.");
-
-            // Validerar att status är ett giltigt värde
+            {
+                throw new NotFoundException("Bokningen hittades inte.");
+            }
             var allowedStatuses = new[] { "Confirmed", "Cancelled", "Pending" };
             if (dto.Status != null && !allowedStatuses.Contains(dto.Status))
             {
-                throw new Exception("Ogiltigt status. Tillåtna värden: Confirmed, Cancelled, Pending.");
+                throw new ValidationException("Ogiltigt status. Tillåtna värden: Confirmed, Cancelled, Pending.");
             }
-
-            // Uppdatera bara det som skickats in
             booking.NoOfGuests = dto.NumberOfGuests ?? booking.NoOfGuests;
             booking.SittingId = dto.SittingId ?? booking.SittingId;
             booking.Status = dto.Status ?? booking.Status;
             booking.Message = dto.Message ?? booking.Message;
 
             if (dto.BookingDate.HasValue)
+            {
                 booking.BookingDate = dto.BookingDate.Value.ToDateTime(TimeOnly.MinValue);
-
+            }
             await _ctx.SaveChangesAsync();
-
             return await GetBookingByNumberAsync(bookingNumber);
         }
         public async Task DeleteBookingAsync(int bookingNumber)
         {
             var booking = await _ctx.Bookings
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
-
             if (booking == null)
             {
-                throw new Exception("Bokningen hittades inte.");
+                throw new NotFoundException("Bokningen hittades inte.");
             }
-
             _ctx.Bookings.Remove(booking);
             await _ctx.SaveChangesAsync();
         }
