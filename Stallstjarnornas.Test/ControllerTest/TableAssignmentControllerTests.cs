@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.OpenApi.Validations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stallstjarnornas.Library.Models;
@@ -45,7 +46,7 @@ namespace Stallstjarnornas.Test.ControllerTest
             [TestMethod]
             //Test steg för steg: 
             //1. jag arrangerar först vad jag skickar in till controllern med assignment (input-data)
-            //2. jag sätter upp vilken respons min FEKADE service ska ge tillbaka via fake-response
+            //2. jag sätter upp vilken respons min FEJKADE service ska ge tillbaka via fake-response
             //3. via mock säger jag: "om GetAvailableTablesAsync anropas med detta assignment så returnera fake-response"
             //4. jag använder min riktiga controller, men med en fejkad service (via interface + mock)
             //5. controllern anropar servicen, men det är mocken som svarar med mitt fake-response
@@ -69,6 +70,18 @@ namespace Stallstjarnornas.Test.ControllerTest
                                                                       //Assert
                 Assert.AreEqual(fakeResponse, comparingResult.Value);
             }
+
+            //JAg vill testa att bad request returneras med detta test. (ska ske ifall exception kastas från servicen alltså måste jag fejka det)
+            //Testet ser ifall bad request returneras när exception castas (oavsett vilket)
+            [TestMethod]
+            public async Task GetAvailableTables_ShouldReturnBadRequest_WhenControllerThrowsException()
+            {
+                var fakeRequest = new GetAvailableTablesDto(new DateOnly(2027, 5, 10), 3);
+                _mockTableAssignmentService.Setup(tas => tas.GetAvailableTablesAsync(fakeRequest)).ThrowsAsync(new Exception());
+                var actual = await _controller.GetAvailableTablesAsync(fakeRequest);
+                Assert.IsInstanceOfType( actual.Result,typeof(BadRequestObjectResult));//Ser ifall svaret är av typen bad request object
+            }
+
         }
     }
 }
