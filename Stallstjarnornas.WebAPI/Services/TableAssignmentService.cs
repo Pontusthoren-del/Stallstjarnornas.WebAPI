@@ -136,7 +136,10 @@ namespace Stallstjarnornas.WebAPI.Services
         {
 
             var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
-
+            if (activeTableassignments.IsNullOrEmpty())
+            {
+                throw new Exception("No assignments found for booking");
+            }
             foreach (var assignment in activeTableassignments)
             {
                 _ctx.TableAssignments.Remove(assignment);
