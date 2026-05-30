@@ -38,7 +38,6 @@ namespace Stallstjarnornas.WebAPI.Controllers
         {
             try
             {
-
                 var result = await _tass.GetAvailableTablesAsync(dto);
                 return Ok(result);
             }
