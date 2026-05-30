@@ -82,6 +82,15 @@ namespace Stallstjarnornas.Test.ControllerTest
                 Assert.IsInstanceOfType( actual.Result,typeof(BadRequestObjectResult));//Ser ifall svaret är av typen bad request object
             }
 
+            [TestMethod]
+            public async Task CreateTableAssignment_ShouldReturnOKresponse_WhenInputIsCorrect()
+            {
+                var assignment = new CreateTableAssignmentDto(1, new List<int> { 1, 2 });
+                var fakeResponse = new TableAssignmentResponseDto(assignment.TableIds, assignment.BookingId, "Testman", 4, new DateOnly(2027, 05, 10), 1);
+                _mockTableAssignmentService.Setup(tas => tas.CreateTableAssignmentAsync(assignment)).ReturnsAsync(fakeResponse);
+                var actual = await _controller.CreateTableAssignmentAsync(assignment);
+                Assert.IsInstanceOfType(actual.Result, typeof(OkObjectResult));
+            }
         }
     }
 }
