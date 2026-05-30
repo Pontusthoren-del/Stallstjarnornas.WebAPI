@@ -112,6 +112,10 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<GetAvailableTablesResponseDto> GetAvailableTablesAsync(GetAvailableTablesDto dto)
         {
+            if (dto.sittingid != 1 || dto.sittingid != 2)
+            {
+                throw new Exception("You must assign sitting Id 1 or 2");
+            }
             var bookedTables = await _ctx.TableAssignments
                 .Where(ta => DateOnly.FromDateTime(ta.Booking.BookingDate) == dto.bookingDate && ta.Booking.SittingId == dto.sittingid)
                 .Select(x => x.TableId)

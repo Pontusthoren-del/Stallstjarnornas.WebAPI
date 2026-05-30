@@ -351,5 +351,26 @@ namespace Stallstjarnornas.Test.ServiceTest
             var result = await _tas.GetAvailableTablesAsync(fakeGetAvailableTablesDTO);
             Assert.AreEqual(23, result.TableIds.Count());
         }
+
+        [TestMethod]
+        public async Task GetAvailableTables_WrongSittingIdInput_ShouldThrowException()
+        {
+            //Arrange
+          
+            var fakeGetAvailableTablesDTO = new GetAvailableTablesDto(new DateOnly(2026, 8, 1), 3);
+            await _ctx.SaveChangesAsync();
+
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+            //Act/Assert
+            try
+            {
+                await _tas.GetAvailableTablesAsync(fakeGetAvailableTablesDTO);//Om detta anrop castar exception så hoppar körningen direkt till catch, annars om anropet är ok så kommer assert.fail köras
+                Assert.Fail("Should have thrown exception");
+            }
+            catch (Exception _ex)
+            {
+                Assert.AreEqual("You must assign sitting Id 1 or 2", _ex.Message);
+            }
+        }
     }
 }
