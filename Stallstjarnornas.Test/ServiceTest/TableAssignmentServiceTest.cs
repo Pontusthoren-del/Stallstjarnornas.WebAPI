@@ -56,7 +56,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -93,7 +93,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -134,7 +134,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -170,7 +170,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -226,7 +226,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 1,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -261,7 +261,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -296,7 +296,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -328,7 +328,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 8, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
