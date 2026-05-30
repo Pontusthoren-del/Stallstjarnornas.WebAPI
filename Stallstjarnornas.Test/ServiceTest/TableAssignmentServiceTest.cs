@@ -56,7 +56,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -93,7 +93,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -134,7 +134,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 2,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -170,7 +170,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -226,7 +226,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 1,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -261,7 +261,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -296,7 +296,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 6, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
@@ -328,15 +328,11 @@ namespace Stallstjarnornas.Test.ServiceTest
                 SittingId = 1,
                 BookingDate = new DateTime(2026, 8, 1),
                 NoOfGuests = 4,
-                Status = "Confirmed",
+                Status = "Pending",
                 BookingNumber = 1003,
                 CreatedDate = DateTime.Now
             });
-            //FakeTables
-            //for (int i = 1; i < 26; i++)
-            //{
-            //    _ctx.Tables.Add(new Stallstjarnornas.Library.Models.Table { });//måste skriva detta pga av att EF har nått inbyggt som också heter table??
-            //}
+           
 
 
             //Faketablesassigmnet dto
@@ -350,6 +346,59 @@ namespace Stallstjarnornas.Test.ServiceTest
             await _tas.CreateTableAssignmentAsync(testAssignment);
             var result = await _tas.GetAvailableTablesAsync(fakeGetAvailableTablesDTO);
             Assert.AreEqual(23, result.TableIds.Count());
+        }
+
+        [TestMethod]
+        public async Task GetAvailableTables_WrongSittingIdInput_ShouldThrowException()
+        {
+            //Arrange
+          
+            var fakeGetAvailableTablesDTO = new GetAvailableTablesDto(new DateOnly(2026, 8, 1), 3);
+            await _ctx.SaveChangesAsync();
+
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+            //Act/Assert
+            try
+            {
+                await _tas.GetAvailableTablesAsync(fakeGetAvailableTablesDTO);//Om detta anrop castar exception så hoppar körningen direkt till catch, annars om anropet är ok så kommer assert.fail köras
+                Assert.Fail("Should have thrown exception");
+            }
+            catch (Exception _ex)
+            {
+                Assert.AreEqual("You must assign sitting Id 1 or 2", _ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public async Task DeleteTableAssignment_NoAssigmnetsFound_ShouldThrowException()
+        {
+            //Arrange
+            var fakeBooking = _ctx.Add(new Booking
+            {
+                Id = 3,
+                GuestId = 2,
+                SittingId = 1,
+                BookingDate = new DateTime(2026, 8, 1),
+                NoOfGuests = 4,
+                Status = "Pending",
+                BookingNumber = 1003,
+                CreatedDate = DateTime.Now
+            });
+
+            var fakeDeleteTableAssignmentsDTO = new DeleteAssignedTablesDTO(3);
+            await _ctx.SaveChangesAsync();
+
+            TableAssignmentService _tas = new TableAssignmentService(_ctx);
+            //Act/Assert
+            try
+            {
+                await _tas.DeleteAssignedTablesAsync(fakeDeleteTableAssignmentsDTO);//Om detta anrop castar exception så hoppar körningen direkt till catch, annars om anropet är ok så kommer assert.fail köras
+                Assert.Fail("Should have thrown exception");
+            }
+            catch (Exception _ex)
+            {
+                Assert.AreEqual("No assignments found for booking", _ex.Message);
+            }
         }
     }
 }
