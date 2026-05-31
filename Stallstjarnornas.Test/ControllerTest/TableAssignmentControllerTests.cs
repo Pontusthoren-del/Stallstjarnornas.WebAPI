@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.OpenApi.Validations;
+using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stallstjarnornas.Library.Models;
@@ -74,7 +75,7 @@ namespace Stallstjarnornas.Test.ControllerTest
             //JAg vill testa att bad request returneras med detta test. (ska ske ifall exception kastas från servicen alltså måste jag fejka det)
             //Testet ser ifall bad request returneras när exception castas (oavsett vilket)
             [TestMethod]
-            public async Task GetAvailableTables_ShouldReturnBadRequest_WhenControllerThrowsException()
+            public async Task GetAvailableTables_ShouldReturnBadRequest_WhenServiceThrowsException()
             {
                 var fakeRequest = new GetAvailableTablesDto(new DateOnly(2027, 5, 10), 3);
                 _mockTableAssignmentService.Setup(tas => tas.GetAvailableTablesAsync(fakeRequest)).ThrowsAsync(new Exception());
@@ -94,13 +95,25 @@ namespace Stallstjarnornas.Test.ControllerTest
             }
 
             [TestMethod]
-            public async Task CreateTableAssignment_ShouldReturnBadrequest_WhenControllerThrowsException()
+            public async Task CreateTableAssignment_ShouldReturnBadrequest_WhenServiceThrowsException()
             {
                 var assignment = new CreateTableAssignmentDto(1, new List<int> { 1, 2 });
                 _mockTableAssignmentService.Setup(tas => tas.CreateTableAssignmentAsync(assignment)).ThrowsAsync(new Exception());
                 var actual = await _controller.CreateTableAssignmentAsync(assignment);
 
                 Assert.IsInstanceOfType(actual.Result, typeof(BadRequestObjectResult));
+            }
+
+            [TestMethod]
+            public async Task DeleteTableAssignment_ShouldReturnOkResponse_WhenCorrectInput()
+            {
+                var assignment = new DeleteAssignedTablesDTO(1);
+                _mockTableAssignmentService.Setup(tas => tas.DeleteAssignedTablesAsync(assignment));
+                var actual = await _controller.DeleteAssignedTablesAsync(assignment);
+
+                Assert.IsInstanceOfType(actual, typeof(OkObjectResult));
+
+
             }
         }
     }
