@@ -89,7 +89,18 @@ namespace Stallstjarnornas.Test.ControllerTest
                 var fakeResponse = new TableAssignmentResponseDto(assignment.TableIds, assignment.BookingId, "Testman", 4, new DateOnly(2027, 05, 10), 1);
                 _mockTableAssignmentService.Setup(tas => tas.CreateTableAssignmentAsync(assignment)).ReturnsAsync(fakeResponse);
                 var actual = await _controller.CreateTableAssignmentAsync(assignment);
-                Assert.IsInstanceOfType(actual.Result, typeof(OkObjectResult));
+                var x=actual.Result as OkObjectResult;
+                Assert.AreEqual(x.Value, fakeResponse);
+            }
+
+            [TestMethod]
+            public async Task CreateTableAssignment_ShouldReturnBadrequest_WhenControllerThrowsException()
+            {
+                var assignment = new CreateTableAssignmentDto(1, new List<int> { 1, 2 });
+                _mockTableAssignmentService.Setup(tas => tas.CreateTableAssignmentAsync(assignment)).ThrowsAsync(new Exception());
+                var actual = await _controller.CreateTableAssignmentAsync(assignment);
+
+                Assert.IsInstanceOfType(actual.Result, typeof(BadRequestObjectResult));
             }
         }
     }
