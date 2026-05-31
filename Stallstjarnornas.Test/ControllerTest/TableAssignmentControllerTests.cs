@@ -108,12 +108,22 @@ namespace Stallstjarnornas.Test.ControllerTest
             public async Task DeleteTableAssignment_ShouldReturnOkResponse_WhenCorrectInput()
             {
                 var assignment = new DeleteAssignedTablesDTO(1);
-                _mockTableAssignmentService.Setup(tas => tas.DeleteAssignedTablesAsync(assignment));
+                _mockTableAssignmentService.Setup(tas => tas.DeleteAssignedTablesAsync(assignment)); //metoder returnerar inget så krävs endast att actual blir ett okresponseObjekt.
                 var actual = await _controller.DeleteAssignedTablesAsync(assignment);
 
                 Assert.IsInstanceOfType(actual, typeof(OkObjectResult));
 
 
+            }
+
+            [TestMethod]
+            public async Task DeleteTableAssignment_ShouldReturnBadRequest_WhenServiceThrowsException()
+            {
+                var assignment = new DeleteAssignedTablesDTO(1);
+                _mockTableAssignmentService.Setup(tas => tas.DeleteAssignedTablesAsync(assignment)).ThrowsAsync(new Exception());
+                var actual = await _controller.DeleteAssignedTablesAsync(assignment);
+
+                Assert.IsInstanceOfType(actual, typeof(BadRequestObjectResult));
             }
         }
     }
