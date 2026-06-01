@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stallstjarnornas.Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace Stallstjarnornas.WebAPI.Interfaces
 {
     public interface IMailLogService
     {
+        Task LogMailAsync(string toEmail, int bookingId);
+        Task<IEnumerable<MailLog>> GetMailLogAsync();
     }
 }

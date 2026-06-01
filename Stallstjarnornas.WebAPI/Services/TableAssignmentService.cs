@@ -112,6 +112,10 @@ namespace Stallstjarnornas.WebAPI.Services
 
         public async Task<GetAvailableTablesResponseDto> GetAvailableTablesAsync(GetAvailableTablesDto dto)
         {
+            if (dto.sittingid != 1 && dto.sittingid != 2)
+            {
+                throw new Exception("You must assign sitting Id 1 or 2");
+            }
             var bookedTables = await _ctx.TableAssignments
                 .Where(ta => DateOnly.FromDateTime(ta.Booking.BookingDate) == dto.bookingDate && ta.Booking.SittingId == dto.sittingid)
                 .Select(x => x.TableId)
@@ -132,7 +136,10 @@ namespace Stallstjarnornas.WebAPI.Services
         {
 
             var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
-
+            if (activeTableassignments.IsNullOrEmpty())
+            {
+                throw new Exception("No assignments found for booking");
+            }
             foreach (var assignment in activeTableassignments)
             {
                 _ctx.TableAssignments.Remove(assignment);

@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Stallstjarnornas.WebAPI.Data;
@@ -12,23 +11,26 @@ namespace Stallstjarnornas.WebAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            var useTestDb = builder.Configuration["UseTestDb"] == "true";
+            var connectionString = useTestDb
+                ? builder.Configuration.GetConnectionString("TestConnection")
+                : builder.Configuration.GetConnectionString("DefaultConnection");
+
             builder.Services.AddDbContext<StallstjarnornasDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("Stallstjarnornas.WebAPI")));
+                options.UseSqlServer(connectionString,
+                    b => b.MigrationsAssembly("Stallstjarnornas.WebAPI")));
 
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<ITableAssignmentService, TableAssignmentService>();
             builder.Services.AddScoped<IGuestService, GuestService>();
-
-            // Add services to the container.
+            builder.Services.AddScoped<IMailLogService, MailLogService>();
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -36,13 +38,9 @@ namespace Stallstjarnornas.WebAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }
-}
+} 
