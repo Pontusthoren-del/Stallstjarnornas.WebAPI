@@ -21,7 +21,7 @@ namespace Stallstjarnornas.WebAPI.Services
         public async Task<String> CancelBookingAsync(int bookingNumber)
         {
             var booking = await _ctx.Bookings
-                .Include(b=>b.Guest)
+                .Include(b => b.Guest)
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
             if (booking == null)
             {
@@ -48,6 +48,10 @@ namespace Stallstjarnornas.WebAPI.Services
                 };
                 _ctx.Guests.Add(guest);
             }
+            if (dto.BookingDate < DateOnly.FromDateTime(DateTime.Today))
+            {
+                throw new ValidationException("Bokningsdatumet kan inte vara i det förflutna.");
+            }
             var sittingInfo = await _ctx.Sittings
                 .Where(s => s.Id == dto.SittingId)
                 .Select(s => new
@@ -69,10 +73,6 @@ namespace Stallstjarnornas.WebAPI.Services
             if (sittingInfo.BookedGuests + dto.NumberOfGuests > sittingInfo.MaxGuests)
             {
                 throw new ValidationException("Sittningen är fullbokad.");
-            }
-            if (dto.BookingDate < DateOnly.FromDateTime(DateTime.Today))
-            {
-                throw new ValidationException("Bokningsdatumet kan inte vara i det förflutna.");
             }
             var maxBookingNumber = await _ctx.Bookings
                 .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;

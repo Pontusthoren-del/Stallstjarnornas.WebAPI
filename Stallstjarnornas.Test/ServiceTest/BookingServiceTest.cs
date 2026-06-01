@@ -569,4 +569,142 @@ public class BookingServiceTest
             Assert.AreEqual("Ogiltigt status. Tillåtna värden: Confirmed, Cancelled, Pending.", ex.Message);
         }
     }
+
+    [TestMethod]
+    public async Task CreateBooking_ShouldThrowValidationException_WhenBookingDateIsInThePast()
+    {
+        // Arrange
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("pontus@test.se"))
+            .ReturnsAsync((Guest?)null);
+
+        var dto = new CreateBookingDto(
+            Name: "Pontus",
+            Phone: "0701234567",
+            Email: "pontus@test.se",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2020, 1, 1), // Datum i förflutna
+            SittingId: 1,
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.CreateBookingAsync(dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Bokningsdatumet kan inte vara i det förflutna.", ex.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task CreateBooking_ShouldThrowValidationException_WhenSittingIsFull()
+    {
+        // Arrange
+        // Fyller upp sittning 1 på 2026-07-01
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 7, 1),
+            NoOfGuests = 50, // ← fullt!
+            Status = "Confirmed",
+            BookingNumber = 1003,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        _mockGuestService
+            .Setup(g => g.GetGuestEntityByEmailAsync("pontus@test.se"))
+            .ReturnsAsync((Guest?)null);
+
+        var dto = new CreateBookingDto(
+            Name: "Pontus",
+            Phone: "0701234567",
+            Email: "pontus@test.se",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2026, 7, 1),
+            SittingId: 1,
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.CreateBookingAsync(dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Sittningen är fullbokad.", ex.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldThrowValidationException_WhenBookingDateIsInThePast()
+    {
+        // Arrange
+        // Bokning 1001 finns redan via TestDataHelper
+        var dto = new UpdateBookingDto(
+            BookingDate: new DateOnly(2020, 1, 1), // Datum i förflutna
+            NumberOfGuests: null,
+            SittingId: null,
+            Status: null,
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.UpdateBookingAsync(1001, dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Bokningsdatumet kan inte vara i det förflutna.", ex.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldThrowValidationException_WhenSittingIsFull()
+    {
+        // Arrange
+        // Fyller upp sittning 1 på 2026-07-01
+        _ctx.Bookings.Add(new Booking
+        {
+            Id = 3,
+            GuestId = 1,
+            SittingId = 1,
+            BookingDate = new DateTime(2026, 7, 1),
+            NoOfGuests = 50, // ← fullt!
+            Status = "Confirmed",
+            BookingNumber = 1003,
+            CreatedDate = DateTime.Now
+        });
+        await _ctx.SaveChangesAsync();
+
+        // Försöker omboka 1001 till den fullbokade sittningen
+        var dto = new UpdateBookingDto(
+            BookingDate: new DateOnly(2026, 7, 1),
+            NumberOfGuests: null,
+            SittingId: 1,
+            Status: null,
+            Message: null
+        );
+
+        // Act + Assert
+        try
+        {
+            await _service.UpdateBookingAsync(1001, dto);
+            Assert.Fail("Skulle ha kastat ett exception");
+        }
+        catch (Exception ex)
+        {
+            Assert.AreEqual("Sittningen är fullbokad.", ex.Message);
+        }
+    }
 }
