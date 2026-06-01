@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Moq;
 using Stallstjarnornas.WebAPI.Controllers;
 using Stallstjarnornas.WebAPI.DTOs.Guest;
@@ -19,6 +20,7 @@ public class GuestControllerTest
             );
         return guest;
     }
+
     [TestInitialize]
     public void SetUp()
     {
@@ -93,7 +95,7 @@ public class GuestControllerTest
 
         var guests = new List<GuestDto> { };
         _serviceMock
-            .Setup(ig => ig.GetAllGuestsAsync())
+            .Setup(g => g.GetAllGuestsAsync())
             .ReturnsAsync(guests);
         //Act
         var result = await _controller.GetAllGuests();
@@ -103,6 +105,42 @@ public class GuestControllerTest
 
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task RegisterGuest_ShouldReturn201_WhenRegisterNewGuest()
+    {
+        var dto = new CreateGuestDto("Test Test", "123123123", "test@test.se");
+        var guest = CreateTestGuest(1, "test@test.se");
+        _serviceMock.Setup(g => g.RegisterGuestAsync(dto))
+            .ReturnsAsync(guest);
+
+        //Act
+        var result = await _controller.RegisterGuest(dto);
+
+        //Assert
+        var okResult = result.Result as CreatedAtActionResult;
+
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(201, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task RegisterGuest_ShouldReturn409_WhenEmailIsNotUnique()
+    {
+        //Arrange
+        var dto = new CreateGuestDto("Test Test", "123123123", "test@test.se");
+       
+
+        _serviceMock.Setup(g => g.RegisterGuestAsync(dto))
+            .ReturnsAsync((GuestDto?)null);
+        
+        //Act
+        var result = await _controller.RegisterGuest(dto);
+        var conflictResult = result.Result as ConflictObjectResult;
+
+        Assert.IsNotNull(conflictResult);
+        Assert.AreEqual(409, conflictResult.StatusCode);
     }
 }
 
