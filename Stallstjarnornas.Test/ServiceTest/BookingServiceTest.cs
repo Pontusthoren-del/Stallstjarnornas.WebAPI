@@ -296,7 +296,9 @@ public class BookingServiceTest
             week: null,
             month: null,
             year: null,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         //Assert
@@ -319,7 +321,9 @@ public class BookingServiceTest
             week: null,
             month: null,
             year: null,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         // Assert
@@ -349,7 +353,9 @@ public class BookingServiceTest
             week: null,
             month: null,
             year: null,
-            isPlaced: true
+            isPlaced: true,
+            guestName: null,
+            bookingNumber: null
         );
 
         // Assert
@@ -372,7 +378,9 @@ public class BookingServiceTest
             week: null,
             month: null,
             year: null,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         // Assert
@@ -406,7 +414,9 @@ public class BookingServiceTest
             week: null,
             month: 6,
             year: 2026,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         // Assert
@@ -442,7 +452,9 @@ public class BookingServiceTest
             week: 23,
             month: null,
             year: 2026,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         // Assert
