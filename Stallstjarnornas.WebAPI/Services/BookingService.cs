@@ -11,10 +11,12 @@ namespace Stallstjarnornas.WebAPI.Services
     {
         private readonly StallstjarnornasDbContext _ctx;
         private readonly IGuestService _guestService;
-        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestService)
+        private readonly IMailLogService _mailService;
+        public BookingService(StallstjarnornasDbContext ctx, IGuestService guestService, IMailLogService mailService)
         {
             _ctx = ctx;
             _guestService = guestService;
+            _mailService = mailService;
         }
         public async Task<String> CancelBookingAsync(int bookingNumber)
         {
@@ -88,6 +90,7 @@ namespace Stallstjarnornas.WebAPI.Services
             };
             _ctx.Bookings.Add(booking);
             await _ctx.SaveChangesAsync();
+            await _mailService.LogMailAsync(guest.Email, booking.Id);
             return new BookingResponseDto(
                 BookingNumber: booking.BookingNumber,
                 GuestName: guest.Name,
@@ -231,9 +234,39 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             var booking = await _ctx.Bookings
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
+            //Fel om bokningen inte hittades
             if (booking == null)
             {
                 throw new NotFoundException("Bokningen hittades inte.");
+            }
+            //Fel om man bokar i det förflutna
+            if (dto.BookingDate.HasValue && dto.BookingDate.Value < DateOnly.FromDateTime(DateTime.Today))
+            {
+                throw new ValidationException("Bokningsdatumet kan inte vara i det förflutna.");
+            }
+            //körs bara om man försöker byta sittning eller datum
+            if (dto.SittingId.HasValue || dto.BookingDate.HasValue)
+            {
+                var newSittingId = dto.SittingId ?? booking.SittingId;
+                var newDate = dto.BookingDate?.ToDateTime(TimeOnly.MinValue) ?? booking.BookingDate;
+                var newGuests = dto.NumberOfGuests ?? booking.NoOfGuests;
+
+                var sittingInfo = await _ctx.Sittings
+                    .Where(s => s.Id == newSittingId)
+                    .Select(s => new
+                    {
+                        s.MaxGuests,
+                        BookedGuests = s.Bookings
+                            .Where(b => b.BookingDate == newDate && b.Status != "Cancelled" && b.BookingNumber != bookingNumber)
+                            .Sum(b => b.NoOfGuests)
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (sittingInfo == null)
+                    throw new NotFoundException("Sittningen finns inte.");
+
+                if (sittingInfo.BookedGuests + newGuests > sittingInfo.MaxGuests)
+                    throw new ValidationException("Sittningen är fullbokad.");
             }
             var allowedStatuses = new[] { "Confirmed", "Cancelled", "Pending" };
             if (dto.Status != null && !allowedStatuses.Contains(dto.Status))

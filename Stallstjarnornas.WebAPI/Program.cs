@@ -19,6 +19,7 @@ namespace Stallstjarnornas.WebAPI
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<ITableAssignmentService, TableAssignmentService>();
             builder.Services.AddScoped<IGuestService, GuestService>();
+            builder.Services.AddScoped<IMailLogService, MailLogService>();
 
             // Add services to the container.
 
