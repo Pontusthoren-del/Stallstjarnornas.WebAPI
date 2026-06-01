@@ -16,6 +16,7 @@ public class BookingServiceTest
     private StallstjarnornasDbContext _ctx;
     private BookingService _service;
     private Mock<IGuestService> _mockGuestService;
+    private Mock<IMailLogService> _mockMailService;
 
     [TestInitialize]
     public async Task Setup()
@@ -23,7 +24,8 @@ public class BookingServiceTest
         _ctx = DbContextFactory.CreateInMemoryContext();
         await TestDataHelper.SeedBasicDataAsync(_ctx);
         _mockGuestService = new Mock<IGuestService>();
-        _service = new BookingService(_ctx, _mockGuestService.Object);
+        _mockMailService = new Mock<IMailLogService>();
+        _service = new BookingService(_ctx, _mockGuestService.Object,_mockMailService.Object);
     }
 
     [TestCleanup]
