@@ -546,4 +546,92 @@ public class BookingControllerTests
         Assert.IsNotNull(badRequest);
         Assert.AreEqual(400, badRequest.StatusCode);
     }
+    [TestMethod]
+    public async Task CreateBooking_ShouldReturnBadRequest_WhenBookingDateIsInThePast()
+    {
+        // ARRANGE
+        // Skapar en DTO med ett datum i förflutna
+        var dto = new CreateBookingDto(
+            Name: "Pontus",
+            Phone: "0701234567",
+            Email: "pontus@test.se",
+            NumberOfGuests: 2,
+            BookingDate: new DateOnly(2020, 1, 1), // Datum i förflutna
+            SittingId: 1,
+            Message: null
+        );
+
+        // Bestämmer att servicen ska kasta ValidationException
+        // eftersom datumet är i det förflutna
+        _serviceMock
+            .Setup(x => x.CreateBookingAsync(It.IsAny<CreateBookingDto>()))
+            .ThrowsAsync(new ValidationException("Bokningsdatumet kan inte vara i det förflutna."));
+
+        // ACT
+        var result = await _controller.CreateBooking(dto);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar ValidationException och returnerar 400 BadRequest
+        var badRequest = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldReturnBadRequest_WhenBookingDateIsInThePast()
+    {
+        // ARRANGE
+        // Skapar en DTO med ett datum i förflutna
+        var dto = new UpdateBookingDto(
+            BookingDate: new DateOnly(2020, 1, 1), // Datum i förflutna
+            NumberOfGuests: null,
+            SittingId: null,
+            Status: null,
+            Message: null
+        );
+
+        // Bestämmer att servicen ska kasta ValidationException
+        // eftersom datumet är i det förflutna
+        _serviceMock
+            .Setup(x => x.UpdateBookingAsync(1001, It.IsAny<UpdateBookingDto>()))
+            .ThrowsAsync(new ValidationException("Bokningsdatumet kan inte vara i det förflutna."));
+
+        // ACT
+        var result = await _controller.UpdateBooking(1001, dto);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar ValidationException och returnerar 400 BadRequest
+        var badRequest = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateBooking_ShouldReturnBadRequest_WhenSittingIsFull()
+    {
+        // ARRANGE
+        // Skapar en DTO där man försöker omboka till en fullbokad sittning
+        var dto = new UpdateBookingDto(
+            BookingDate: new DateOnly(2026, 7, 1),
+            NumberOfGuests: null,
+            SittingId: 1,
+            Status: null,
+            Message: null
+        );
+
+        // Bestämmer att servicen ska kasta ValidationException
+        // eftersom sittningen är fullbokad
+        _serviceMock
+            .Setup(x => x.UpdateBookingAsync(1001, It.IsAny<UpdateBookingDto>()))
+            .ThrowsAsync(new ValidationException("Sittningen är fullbokad."));
+
+        // ACT
+        var result = await _controller.UpdateBooking(1001, dto);
+
+        // ASSERT
+        // Kontrollerar att controllern fångar ValidationException och returnerar 400 BadRequest
+        var badRequest = result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(400, badRequest.StatusCode);
+    }
 }
