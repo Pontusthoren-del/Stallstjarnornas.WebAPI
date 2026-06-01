@@ -62,11 +62,13 @@ public class BookingController : ControllerBase
         [FromQuery] int? week,
         [FromQuery] int? month,
         [FromQuery] int? year,
-        [FromQuery] bool? isPlaced)
+        [FromQuery] bool? isPlaced,
+        [FromQuery] string? guestName,
+        [FromQuery] int? bookingNumber)
     {
         try
         {
-            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year, isPlaced);
+            var result = await _service.FilterBookingsAsync(status, date, sittingId, week, month, year, isPlaced,guestName,bookingNumber);
             return Ok(result);
         }
         catch (Exception ex)
@@ -76,12 +78,12 @@ public class BookingController : ControllerBase
     }
 
     [HttpPatch("Cancel/{bookingNumber}")]
-    public async Task<ActionResult> CancelBooking(int bookingNumber)
+    public async Task<ActionResult> CancelBooking(int bookingNumber )
     {
         try
         {
-            await _service.CancelBookingAsync(bookingNumber);
-            return Ok("Bokningen är avbokad.");
+            var guestName= await _service.CancelBookingAsync(bookingNumber);
+            return Ok($"Bokningen i namnet: {guestName} med bokningsnumret {bookingNumber} är avbokad.");
         }
         catch (NotFoundException ex)
         {
