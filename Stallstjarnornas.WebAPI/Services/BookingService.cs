@@ -16,9 +16,10 @@ namespace Stallstjarnornas.WebAPI.Services
             _ctx = ctx;
             _guestService = guestService;
         }
-        public async Task CancelBookingAsync(int bookingNumber)
+        public async Task<String> CancelBookingAsync(int bookingNumber)
         {
             var booking = await _ctx.Bookings
+                .Include(b=>b.Guest)
                 .FirstOrDefaultAsync(b => b.BookingNumber == bookingNumber);
             if (booking == null)
             {
@@ -30,6 +31,7 @@ namespace Stallstjarnornas.WebAPI.Services
             }
             booking.Status = "Cancelled";
             await _ctx.SaveChangesAsync();
+            return booking.Guest.Name;
         }
         public async Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto)
         {
@@ -66,6 +68,10 @@ namespace Stallstjarnornas.WebAPI.Services
             {
                 throw new ValidationException("Sittningen är fullbokad.");
             }
+            if (dto.BookingDate < DateOnly.FromDateTime(DateTime.Today))
+            {
+                throw new ValidationException("Bokningsdatumet kan inte vara i det förflutna.");
+            }
             var maxBookingNumber = await _ctx.Bookings
                 .MaxAsync(b => (int?)b.BookingNumber) ?? 1000;
 
@@ -98,7 +104,7 @@ namespace Stallstjarnornas.WebAPI.Services
             );
         }
         public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
-            string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced)
+            string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced, string? guestName, int? bookingNumber)
         {
             var query = _ctx.Bookings.AsQueryable();
 
@@ -109,6 +115,14 @@ namespace Stallstjarnornas.WebAPI.Services
             if (sittingId.HasValue)
             {
                 query = query.Where(b => b.SittingId == sittingId.Value);
+            }
+            if (!string.IsNullOrEmpty(guestName))
+            {
+                query = query.Where(b => b.Guest.Name.ToLower().Contains(guestName.ToLower()));
+            }
+            if (bookingNumber.HasValue)
+            {
+                query = query.Where(b => b.BookingNumber == bookingNumber.Value);
             }
             if (status != null)
             {
