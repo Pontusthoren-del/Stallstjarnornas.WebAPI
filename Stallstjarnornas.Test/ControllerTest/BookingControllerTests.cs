@@ -293,7 +293,7 @@ public class BookingControllerTests
         // Bestämmer att avbokning ska lyckas utan exception
         _serviceMock
             .Setup(x => x.CancelBookingAsync(1))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync("Pontus");
 
         // ACT
         var result = await _controller.CancelBooking(1);
@@ -492,7 +492,7 @@ public class BookingControllerTests
         // Bestämmer att servicen returnerar vår lista när status = "Confirmed"
         // och alla andra filter är null
         _serviceMock
-            .Setup(x => x.FilterBookingsAsync("Confirmed", null, null, null, null, null, null))
+            .Setup(x => x.FilterBookingsAsync("Confirmed", null, null, null, null, null, null,null,null))
             .ReturnsAsync(bookings);
 
         // ACT
@@ -504,7 +504,9 @@ public class BookingControllerTests
             week: null,
             month: null,
             year: null,
-            isPlaced: null
+            isPlaced: null,
+            guestName: null,
+            bookingNumber: null
         );
 
         // ASSERT
@@ -528,12 +530,15 @@ public class BookingControllerTests
                 It.IsAny<int?>(),
                 It.IsAny<int?>(),
                 It.IsAny<int?>(),
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                It.IsAny<string?>(),
+                It.IsAny<int?>()))
+           
             .ThrowsAsync(new Exception("Något gick fel."));
 
         // ACT
         // Anropar med alla null - filtren spelar ingen roll här
-        var result = await _controller.FilterBookings(null, null, null, null, null, null, null);
+        var result = await _controller.FilterBookings(null, null, null, null, null, null, null,null,null);
 
         // ASSERT
         // Kontrollerar att controllern fångar exception och returnerar 400 BadRequest
