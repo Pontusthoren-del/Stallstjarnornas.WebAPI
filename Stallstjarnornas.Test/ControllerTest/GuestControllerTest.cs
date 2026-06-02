@@ -157,6 +157,22 @@ public class GuestControllerTest
         Assert.IsNotNull(noContentResult);
         Assert.AreEqual(204, noContentResult.StatusCode);
     }
+    [TestMethod]
+    public async Task DeleteGuest_ShouldReturnNotFound_WhenTryNonExistingGuest()
+    {
+        //Arrange
+
+        _serviceMock.Setup(g => g.DeleteGuestAsync(999))
+            .ReturnsAsync(false);
+
+        //Act
+        var result = await _controller.DeleteGuest(999);
+        var notFoundResult = result as NotFoundObjectResult;
+
+        //Assert
+        Assert.IsNotNull(notFoundResult);
+        Assert.AreEqual(404, notFoundResult.StatusCode);
+    }
 }
 
 
