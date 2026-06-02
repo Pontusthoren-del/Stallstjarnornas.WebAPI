@@ -7,6 +7,7 @@ using Stallstjarnornas.Library.Models;
 using Stallstjarnornas.WebAPI.Data;
 using Stallstjarnornas.WebAPI.DTOs.Booking;
 using Stallstjarnornas.WebAPI.DTOs.TableAssignment;
+using Stallstjarnornas.WebAPI.Exceptions;
 using Stallstjarnornas.WebAPI.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,11 +35,12 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (booking == null)
             {
-                throw new Exception("Booking not found");
+                
+                throw new NotFoundException("Booking not found");
             }
             if (booking.Status == "Cancelled" || booking.Status == "Confirmed")
             {
-                throw new Exception("Booking not valid");
+                throw new ConflictException("Booking not valid");
             }//Skriv test för detta
 
             var noOfGuests = booking.NoOfGuests;
@@ -57,28 +59,28 @@ namespace Stallstjarnornas.WebAPI.Services
 
             if (dto.TableIds.Distinct().Count() != dto.TableIds.Count())//om bord ej är unika
             {
-                throw new Exception("You assigned one or more tables more than once");
+                throw new ConflictException("You assigned one or more tables more than once");
             }
             if (tablesToAssign.Count != dto.TableIds.Count)
             {
-                throw new Exception("One or more tables where not found");
+                throw new NotFoundException("One or more tables where not found");
             }
 
 
             if (tablesToAssign.IsNullOrEmpty())
             {
-                throw new Exception("No tables found");
+                throw new NotFoundException("No tables found");
             }
 
             foreach (var table in tablesToAssign)
             {
                 if (_ctx.TableAssignments.Any(ta => ta.Table.Id == table.Id && ta.Booking.BookingDate == booking.BookingDate && ta.Booking.SittingId == booking.SittingId))//Kollar ifall det finns någon assignment inlagd med samma bord.
                 {
-                    throw new Exception("Table is allready being used");
+                    throw new ConflictException("Table is allready being used");
                 }
                 if (tablesToAssign.Count() < tablesNeeded)
                 {
-                    throw new Exception("You need to assign more tables");
+                    throw new ValidationException("You need to assign more tables");
                 }
 
             }
@@ -115,7 +117,7 @@ namespace Stallstjarnornas.WebAPI.Services
         {
             if (dto.sittingid != 1 && dto.sittingid != 2)
             {
-                throw new Exception("You must assign sitting Id 1 or 2");
+                throw new ValidationException("You must assign sitting Id 1 or 2");
             }
             var bookedTables = await _ctx.TableAssignments
                 .Where(ta => DateOnly.FromDateTime(ta.Booking.BookingDate) == dto.bookingDate && ta.Booking.SittingId == dto.sittingid)
@@ -139,7 +141,7 @@ namespace Stallstjarnornas.WebAPI.Services
             var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.Booking.BookingNumber == dto.bookingNumber).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
             if (activeTableassignments.IsNullOrEmpty())
             {
-                throw new Exception("No assignments found for booking");
+                throw new NotFoundException("No assignments found for booking");
             }
             foreach (var assignment in activeTableassignments)
             {
