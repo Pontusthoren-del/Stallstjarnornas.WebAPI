@@ -196,7 +196,7 @@ public class GuestControllerTest
     }
 
     [TestMethod]
-    public async Task Update_ShouldRetunNotFound_WhenTryToUpdateNonExistingGuest()
+    public async Task UpdateGuest_ShouldRetunNotFound_WhenTryToUpdateNonExistingGuest()
     {
         var dto = new UpdateGuestDto("Test Test", "123123123", "test@test.se");
 
