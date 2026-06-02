@@ -140,7 +140,7 @@ namespace Stallstjarnornas.WebAPI.Services
                 query = query.Where(b => b.BookingNumber == bookingNumber.Value);
             }
 
-            // Filtrerar på bokningsstatus (t.ex. "Active", "Cancelled", "Confirmed")
+            // Filtrerar på bokningsstatus (t.ex. "Pending", "Cancelled", "Confirmed")
             if (status != null)
             {
                 query = query.Where(b => b.Status == status);
