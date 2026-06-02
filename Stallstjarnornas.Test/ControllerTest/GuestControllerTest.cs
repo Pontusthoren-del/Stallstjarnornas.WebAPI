@@ -173,6 +173,23 @@ public class GuestControllerTest
         Assert.IsNotNull(notFoundResult);
         Assert.AreEqual(404, notFoundResult.StatusCode);
     }
+    [TestMethod]
+    public async Task UpdateGuest_ShouldReturnOk_WhenTryToUpdateGuest()
+    {
+        //Arrange
+        var dto = new UpdateGuestDto("Test Test", "123123123", "test@test.se");
+        var guest = CreateTestGuest(1, "test@test.se");
+        _serviceMock.Setup(g => g.UpdateGuestAsync(1, dto))
+            .ReturnsAsync(guest);
+
+        //Act
+        var result = await _controller.UpdateGuest(1, dto);
+        var okResult = result.Result as OkObjectResult;
+
+        //Assert
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
         Assert.IsNotNull(notFoundResult);
         Assert.AreEqual(404, notFoundResult.StatusCode);
     }
