@@ -4,7 +4,7 @@ namespace Stallstjarnornas.WebAPI.DTOs.TableAssignment
 {
     public record DeleteAssignedTablesDTO(
             [Required]
-        int BookingId
+        int bookingNumber
 
             );
 

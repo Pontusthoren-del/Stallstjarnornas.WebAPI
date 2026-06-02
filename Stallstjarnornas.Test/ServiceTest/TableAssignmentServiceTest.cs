@@ -63,21 +63,21 @@ namespace Stallstjarnornas.Test.ServiceTest
 
             await _ctx.SaveChangesAsync();
             //Fejkat DTO-inskick
-            var fakeTableAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1 });
+            var fakeTableAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 1 });
 
 
             //Act
             TableAssignmentService _tas = new TableAssignmentService(_ctx);
             var result = await _tas.CreateTableAssignmentAsync(fakeTableAssignment);
-            var expected = new TableAssignmentResponseDto(new List<int>() { 1 }, 3, "woop woopsson", 2, new DateOnly(2026, 06, 01), 1);
+            var expected = new TableAssignmentResponseDto(new List<int>() { 1 }, 1003, "woop woopsson", 2, new DateOnly(2026, 06, 01), 1);
             //Assert
-            Assert.AreEqual(result.BookingId, expected.BookingId, "Correct input should yield correct response");
+            Assert.AreEqual(result.bookingNumber, expected.bookingNumber, "Correct input should yield correct response");
             CollectionAssert.AreEqual(result.TableIds, expected.TableIds, "Correct input should yield correct response");//collection assert för att det är listor
 
-            var pullTest = await _ctx.TableAssignments.FirstOrDefaultAsync(ta => ta.BookingId == 3);
+            var pullTest = await _ctx.TableAssignments.FirstOrDefaultAsync(ta => ta.Booking.BookingNumber == 1003);
 
             Assert.AreEqual(1, pullTest.TableId);
-            Assert.AreEqual(3, pullTest.BookingId);
+            Assert.AreEqual(1003, pullTest.Booking.BookingNumber);
             //Testar ifall det sparades till databasen
         }
 
@@ -103,7 +103,7 @@ namespace Stallstjarnornas.Test.ServiceTest
             await _ctx.SaveChangesAsync();
 
             //Fejkat DTO-inskick
-            var fakeNewTableAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1 });
+            var fakeNewTableAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 1 });
 
             //Act
             //Assert
@@ -140,7 +140,7 @@ namespace Stallstjarnornas.Test.ServiceTest
             });
 
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 32 });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 32 });
             await _ctx.SaveChangesAsync();
             //Act
 
@@ -175,7 +175,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 2 });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 2 });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -231,7 +231,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() { });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -266,7 +266,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1, 1 });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 1, 1 });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -301,7 +301,7 @@ namespace Stallstjarnornas.Test.ServiceTest
                 CreatedDate = DateTime.Now
             });
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() { 1, 2 });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() { 1, 2 });
             await _ctx.SaveChangesAsync();
             //Act
             var _tas = new TableAssignmentService(_ctx);
@@ -336,7 +336,7 @@ namespace Stallstjarnornas.Test.ServiceTest
 
 
             //Faketablesassigmnet dto
-            var testAssignment = new CreateTableAssignmentDto(3, new List<int>() {1, 2 });
+            var testAssignment = new CreateTableAssignmentDto(1003, new List<int>() {1, 2 });
             var fakeGetAvailableTablesDTO = new GetAvailableTablesDto(new DateOnly(2026, 8, 1), 1);
             await _ctx.SaveChangesAsync();
 
