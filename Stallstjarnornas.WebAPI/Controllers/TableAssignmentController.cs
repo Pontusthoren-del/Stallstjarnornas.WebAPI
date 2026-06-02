@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using Stallstjarnornas.WebAPI.DTOs.TableAssignment;
+using Stallstjarnornas.WebAPI.Exceptions;
 using Stallstjarnornas.WebAPI.Interfaces;
 
 
@@ -26,9 +27,21 @@ namespace Stallstjarnornas.WebAPI.Controllers
                 return Ok(result);
 
             }
-            catch (Exception ex)
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ConflictException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -41,7 +54,11 @@ namespace Stallstjarnornas.WebAPI.Controllers
                 var result = await _tass.GetAvailableTablesAsync(dto);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -52,9 +69,12 @@ namespace Stallstjarnornas.WebAPI.Controllers
         {
             try
             {
-
                 await _tass.DeleteAssignedTablesAsync(dto);
                 return Ok("Table assignment was successfully deleted");
+            }
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch(Exception ex)
             {
