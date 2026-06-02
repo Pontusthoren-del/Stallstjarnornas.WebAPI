@@ -30,7 +30,7 @@ namespace Stallstjarnornas.WebAPI.Services
 
 
             var booking = await _ctx.Bookings.Include(b=>b.Guest)
-            .FirstOrDefaultAsync(b => b.Id == dto.BookingId);
+            .FirstOrDefaultAsync(b => b.BookingNumber == dto.bookingNumber);
 
             if (booking == null)
             {
@@ -85,7 +85,8 @@ namespace Stallstjarnornas.WebAPI.Services
 
             var response = new TableAssignmentResponseDto(
                   dto.TableIds,
-                    booking.Id,
+                    //booking.Id,
+                    booking.BookingNumber,
                     booking.Guest.Name,
                     booking.NoOfGuests,
                     DateOnly.FromDateTime(booking.BookingDate),
@@ -135,7 +136,7 @@ namespace Stallstjarnornas.WebAPI.Services
         public async Task DeleteAssignedTablesAsync(DeleteAssignedTablesDTO dto)  
         {
 
-            var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.BookingId == dto.BookingId).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
+            var activeTableassignments = await _ctx.TableAssignments.Include(ta=>ta.Booking).Where(ta => ta.Booking.BookingNumber == dto.bookingNumber).ToListAsync();//HÄMTA FLERA ASSIGNMENTS?!
             if (activeTableassignments.IsNullOrEmpty())
             {
                 throw new Exception("No assignments found for booking");

@@ -87,7 +87,7 @@ namespace Stallstjarnornas.Test.ControllerTest
             public async Task CreateTableAssignment_ShouldReturnOKresponse_WhenInputIsCorrect()
             {
                 var assignment = new CreateTableAssignmentDto(1, new List<int> { 1, 2 });
-                var fakeResponse = new TableAssignmentResponseDto(assignment.TableIds, assignment.BookingId, "Testman", 4, new DateOnly(2027, 05, 10), 1);
+                var fakeResponse = new TableAssignmentResponseDto(assignment.TableIds, assignment.bookingNumber, "Testman", 4, new DateOnly(2027, 05, 10), 1);
                 _mockTableAssignmentService.Setup(tas => tas.CreateTableAssignmentAsync(assignment)).ReturnsAsync(fakeResponse);
                 var actual = await _controller.CreateTableAssignmentAsync(assignment);
                 var x=actual.Result as OkObjectResult;
