@@ -120,7 +120,7 @@ public class BookingServiceTest
             Phone: "070-000 00 00",
             Email: "ny@test.com",
             NumberOfGuests: 2,
-            BookingDate: new DateOnly(2026, 6, 1),
+            BookingDate: new DateOnly(2026,07,01),
             SittingId: 1,
             Message: null
             );
@@ -167,7 +167,7 @@ public class BookingServiceTest
             Phone: "070-123 45 67",
             Email: "anna@test.com",
             NumberOfGuests: 2,
-            BookingDate: new DateOnly(2026, 6, 1),
+            BookingDate: new DateOnly(2026, 7, 1),
             SittingId: 1,
             Message: null
         );
@@ -205,7 +205,7 @@ public class BookingServiceTest
             Id = 3,
             GuestId = 1,
             SittingId = 1,
-            BookingDate = new DateTime(2026, 6, 1),
+            BookingDate = new DateTime(2026, 7, 1),
             NoOfGuests = 50, // ← fullt!
             Status = "Confirmed",
             BookingNumber = 1001,
@@ -222,7 +222,7 @@ public class BookingServiceTest
             Phone: "070-000 00 00",
             Email: "ny@test.com",
             NumberOfGuests: 2,
-            BookingDate: new DateOnly(2026, 6, 1),
+            BookingDate: new DateOnly(2026, 7, 1),
             SittingId: 1,
             Message: null
         );
@@ -255,7 +255,7 @@ public class BookingServiceTest
             Phone: "070-000 00 00",
             Email: "ny@test.com",
             NumberOfGuests: 2,
-            BookingDate: new DateOnly(2026, 6, 1),
+            BookingDate: new DateOnly(2026, 7, 1),
             SittingId: 99,
             Message: null
             );
