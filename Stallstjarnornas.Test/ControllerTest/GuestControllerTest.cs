@@ -60,7 +60,7 @@ public class GuestControllerTest
         var result = await _controller.GetGuest(1);
 
         //Assert
-        var nullResult = result.Result as NotFoundResult;
+        var nullResult = result.Result as NotFoundObjectResult;
         Assert.IsNotNull(nullResult);
         Assert.AreEqual(404, nullResult.StatusCode);
     }
@@ -141,6 +141,21 @@ public class GuestControllerTest
 
         Assert.IsNotNull(conflictResult);
         Assert.AreEqual(409, conflictResult.StatusCode);
+    }
+    [TestMethod]
+    public async Task DeleteGuest_ShouldReturnNoContent_WhenGuestGetsDeleted()
+    {
+        //Arrange
+
+        _serviceMock.Setup(g => g.DeleteGuestAsync(1))
+            .ReturnsAsync(true);
+
+        //Act
+        var result = await _controller.DeleteGuest(1);
+        var noContentResult = result as NoContentResult;
+        //Assert
+        Assert.IsNotNull(noContentResult);
+        Assert.AreEqual(204, noContentResult.StatusCode);
     }
 }
 
