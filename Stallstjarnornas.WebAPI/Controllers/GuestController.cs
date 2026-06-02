@@ -21,7 +21,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
         public async Task<ActionResult<GuestDto>> GetGuest(int id)
         {
             var guest = await _service.GetGuestByIdAsync(id);
-            if (guest == null) return NotFound();
+            if (guest == null) return NotFound("Id:t du sökte på finns inte.");
             return Ok(guest);
         }
 
@@ -36,7 +36,7 @@ namespace Stallstjarnornas.WebAPI.Controllers
         public async Task<ActionResult<GuestDto>> UpdateGuest(int id, UpdateGuestDto dto)
         {
             var guest = await _service.UpdateGuestAsync(id, dto);
-            if (guest == null) return NotFound();
+            if (guest == null) return NotFound("Id:t du sökte på finns inte.");
             return Ok(guest);
         }
 

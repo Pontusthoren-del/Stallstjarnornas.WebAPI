@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Moq;
@@ -60,7 +61,7 @@ public class GuestControllerTest
         var result = await _controller.GetGuest(1);
 
         //Assert
-        var nullResult = result.Result as NotFoundResult;
+        var nullResult = result.Result as NotFoundObjectResult;
         Assert.IsNotNull(nullResult);
         Assert.AreEqual(404, nullResult.StatusCode);
     }
@@ -141,6 +142,72 @@ public class GuestControllerTest
 
         Assert.IsNotNull(conflictResult);
         Assert.AreEqual(409, conflictResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task DeleteGuest_ShouldReturnNoContent_WhenGuestGetsDeleted()
+    {
+        //Arrange
+
+        _serviceMock.Setup(g => g.DeleteGuestAsync(1))
+            .ReturnsAsync(true);
+
+        //Act
+        var result = await _controller.DeleteGuest(1);
+        var noContentResult = result as NoContentResult;
+        //Assert
+        Assert.IsNotNull(noContentResult);
+        Assert.AreEqual(204, noContentResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task DeleteGuest_ShouldReturnNotFound_WhenTryNonExistingGuest()
+    {
+        //Arrange
+
+        _serviceMock.Setup(g => g.DeleteGuestAsync(999))
+            .ReturnsAsync(false);
+
+        //Act
+        var result = await _controller.DeleteGuest(999);
+        var notFoundResult = result as NotFoundObjectResult;
+
+        //Assert
+        Assert.IsNotNull(notFoundResult);
+        Assert.AreEqual(404, notFoundResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateGuest_ShouldReturnOk_WhenTryToUpdateGuest()
+    {
+        //Arrange
+        var dto = new UpdateGuestDto("Test Test", "123123123", "test@test.se");
+        var guest = CreateTestGuest(1, "test@test.se");
+        _serviceMock.Setup(g => g.UpdateGuestAsync(1, dto))
+            .ReturnsAsync(guest);
+
+        //Act
+        var result = await _controller.UpdateGuest(1, dto);
+        var okResult = result.Result as OkObjectResult;
+
+        //Assert
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdateGuest_ShouldRetunNotFound_WhenTryToUpdateNonExistingGuest()
+    {
+        var dto = new UpdateGuestDto("Test Test", "123123123", "test@test.se");
+
+        _serviceMock.Setup(g => g.UpdateGuestAsync(1, dto))
+            .ReturnsAsync((GuestDto?) null);
+
+        var result = await _controller.UpdateGuest(1, dto);
+        var notFoundResult = result.Result as NotFoundObjectResult;
+
+        Assert.IsNotNull(notFoundResult);
+        Assert.AreEqual(404, notFoundResult.StatusCode);
     }
 }
 
