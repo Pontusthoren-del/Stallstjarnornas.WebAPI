@@ -173,6 +173,9 @@ public class GuestControllerTest
         Assert.IsNotNull(notFoundResult);
         Assert.AreEqual(404, notFoundResult.StatusCode);
     }
+        Assert.IsNotNull(notFoundResult);
+        Assert.AreEqual(404, notFoundResult.StatusCode);
+    }
 }
 
 
