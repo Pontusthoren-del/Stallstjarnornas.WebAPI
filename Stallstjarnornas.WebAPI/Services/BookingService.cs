@@ -106,39 +106,59 @@ namespace Stallstjarnornas.WebAPI.Services
                 IsPlaced: false
             );
         }
+        
+        /// Filtrerar bokningar baserat på valfria sökkriterier.
+        /// Alla parametrar är optional — skickas ingen parameter returneras alla bokningar.
+        /// 
         public async Task<IEnumerable<BookingResponseDto>> FilterBookingsAsync(
             string? status, DateOnly? date, int? sittingId, int? week, int? month, int? year, bool? isPlaced, string? guestName, int? bookingNumber)
         {
+            // Startar en query mot databasen utan att faktiskt hämta data än (deferred execution)
             var query = _ctx.Bookings.AsQueryable();
 
+            // Filtrerar på exakt datum om det angetts
             if (date.HasValue)
             {
                 query = query.Where(b => b.BookingDate == date.Value.ToDateTime(TimeOnly.MinValue));
             }
+
+            // Filtrerar på vilket sittning-pass bokningen tillhör
             if (sittingId.HasValue)
             {
                 query = query.Where(b => b.SittingId == sittingId.Value);
             }
+
+            // Case-insensitivt namnfilter — matchar delsträngar (t.ex. "anna" hittar "Anna Svensson")
             if (!string.IsNullOrEmpty(guestName))
             {
                 query = query.Where(b => b.Guest.Name.ToLower().Contains(guestName.ToLower()));
             }
+
+            // Filtrerar på ett specifikt bokningsnummer
             if (bookingNumber.HasValue)
             {
                 query = query.Where(b => b.BookingNumber == bookingNumber.Value);
             }
+
+            // Filtrerar på bokningsstatus (t.ex. "Pending", "Cancelled", "Confirmed")
             if (status != null)
             {
                 query = query.Where(b => b.Status == status);
             }
+
+            // Månad kräver alltid ett år för att vara meningsfullt
             if (month.HasValue && year.HasValue)
             {
                 query = query.Where(b => b.BookingDate.Month == month.Value && b.BookingDate.Year == year.Value);
             }
+            // År utan vecka hanteras här — år + vecka hanteras senare i minnet (se nedan)
             else if (year.HasValue && !week.HasValue)
             {
                 query = query.Where(b => b.BookingDate.Year == year.Value);
             }
+
+            // Kör SQL-frågan mot databasen här — resterande filtrering sker i minnet
+            // eftersom ISOWeek inte stöds direkt av EF Core / SQL Server
             var result = await query
                 .Select(b => new
                 {
@@ -153,9 +173,13 @@ namespace Stallstjarnornas.WebAPI.Services
                     b.Status,
                     b.Message,
                     b.CreatedDate,
+                    // Kontrollerar om bordsplacering finns via TableAssignments-relationen
                     IsPlaced = b.TableAssignments.Any()
                 })
                 .ToListAsync();
+
+            // Veckofiltrering måste ske i minnet (in-memory) eftersom
+            // ISOWeek.GetWeekOfYear() inte kan översättas till SQL av EF Core
             if (week.HasValue && year.HasValue)
             {
                 result = result.Where(b =>
@@ -172,10 +196,14 @@ namespace Stallstjarnornas.WebAPI.Services
                         b.BookingDate.ToDateTime(TimeOnly.MinValue)) == week.Value)
                     .ToList();
             }
+
+            // isPlaced filtreras också i minnet eftersom det är ett beräknat värde
             if (isPlaced.HasValue)
             {
                 result = result.Where(b => b.IsPlaced == isPlaced.Value).ToList();
             }
+
+            // Mappar det anonyma objektet till en DTO innan retur
             return result.Select(b => new BookingResponseDto(
                 BookingNumber: b.BookingNumber,
                 GuestName: b.GuestName,
