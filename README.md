@@ -250,16 +250,12 @@ Writing the tests did not just verify existing code — in several cases they di
 **GuestService — deletion with active bookings**
 When writing the tests for `DeleteGuestAsync` it became clear that a straightforward delete was not sufficient. The tests exposed the scenario where a guest has existing bookings, which led us to implement logic that sets `Status = "Cancelled"` and nullifies `GuestId` on all related bookings rather than blocking the deletion entirely. Without the tests this edge case would likely have been missed.
 
-**BookingService — sitting capacity validation**
-The test `CreateBooking_SittingFull_ShouldThrowException` forced us to explicitly validate the number of guests against `Sitting.MaxGuests` inside the service layer. The database model has no such constraint, so this business rule would have been easy to overlook. The test made it a hard requirement.
-
 **TableAssignmentService — defensive input validation**
 Writing tests for edge cases such as duplicate table IDs and empty table lists revealed that these scenarios were not handled at all in the initial implementation. The tests drove us to add defensive validation at the start of `CreateTableAssignmentAsync`, catching bad input before it reached the database.
 
 **BookingService — cancellation of already-cancelled bookings**
 The test `CancelBooking_AlreadyCancelled_ShouldThrowException` uncovered that the service originally allowed cancelling a booking that was already cancelled, silently doing nothing. The test made this a clearly defined error case that now throws a `ConflictException` with a descriptive message.
 
-**End-to-end integration tests via Postman** — the current service tests use an InMemory database which does not enforce all SQL Server constraints. Running Postman tests against a real database instance would catch any discrepancies between EF Core behaviour and the actual database.
 
 ---
 
